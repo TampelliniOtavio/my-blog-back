@@ -1,0 +1,23 @@
+meta {
+  name: Sign In
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/auth/signin
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "username2",
+    "password": "password",
+    "email": "email@email.com"
+  }
+}
+
+script:post-response {
+  bru.setGlobalEnvVar("token", "res.body.token")
+}

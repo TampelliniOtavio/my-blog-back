@@ -21,3 +21,16 @@ func (c *RepositoryMock) GetByUsername(username string) (*auth.User, error) {
 
     return first.(*auth.User), err
 }
+
+func (c *RepositoryMock) CreateUser(user *auth.User) (*auth.User, error) {
+    args := c.Called(user)
+
+    first := args.Get(0)
+    err := args.Error(1)
+
+    if first == nil {
+        return nil, err
+    }
+
+    return first.(*auth.User), err
+}

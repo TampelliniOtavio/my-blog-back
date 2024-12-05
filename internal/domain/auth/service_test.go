@@ -17,9 +17,28 @@ var (
         Username: "username",
         Password: "password",
     }
+    signinBody = authcontract.PostSigninBody{
+        Username: "username",
+        Email: "email@email.com",
+        Password: "password",
+    }
 )
 
+func setup() {
+    service = auth.ServiceImp{}
+    loginBody = authcontract.PostLoginBody{
+        Username: "username",
+        Password: "password",
+    }
+    signinBody = authcontract.PostSigninBody{
+        Username: "username",
+        Email: "email@email.com",
+        Password: "password",
+    }
+}
+
 func Test_LoginUser_should_login (t *testing.T) {
+    setup()
     assert := assert.New(t)
 
     user, _ := auth.NewUser(loginBody.Username, "email@email.com", loginBody.Password)
@@ -35,6 +54,7 @@ func Test_LoginUser_should_login (t *testing.T) {
 }
 
 func Test_LoginUser_should_not_login_incorrect_password (t *testing.T) {
+    setup()
     assert := assert.New(t)
 
     user, _ := auth.NewUser(loginBody.Username, "email@email.com", "OtherPassword")
@@ -50,6 +70,7 @@ func Test_LoginUser_should_not_login_incorrect_password (t *testing.T) {
 }
 
 func Test_LoginUser_should_not_login_user_not_found (t *testing.T) {
+    setup()
     assert := assert.New(t)
 
     repository := new(authmock.RepositoryMock)
@@ -60,4 +81,26 @@ func Test_LoginUser_should_not_login_user_not_found (t *testing.T) {
     _, err := service.LoginUser(&loginBody)
 
     assert.NotNil(err)
+}
+
+func Test_CreateUser_should_create(t *testing.T) {
+    setup()
+    assert := assert.New(t)
+
+    repository := new(authmock.RepositoryMock)
+
+    user, _ := auth.NewUser(signinBody.Username, signinBody.Email, signinBody.Password)
+
+    repository.On("CreateUser", mock.Anything).Return(user, nil)
+    service.Repository = repository
+
+    user, err := service.CreateUser(&signinBody)
+
+    assert.Nil(err)
+    assert.NotNil(user)
+    assert.NotNil(user.Id)
+    assert.NotNil(user.Xid)
+    assert.Equal(user.Username, signinBody.Username)
+    assert.Equal(user.Email, signinBody.Email)
+    assert.NotEqual(user.Password, signinBody.Password, "Password Should be Encrypted")
 }

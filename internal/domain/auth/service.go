@@ -12,6 +12,7 @@ import (
 
 type Service interface{
     LoginUser(body *authcontract.PostLoginBody) (string, error)
+    CreateUser(body *authcontract.PostSigninBody) (*User, error)
 }
 
 type ServiceImp struct{
@@ -47,4 +48,14 @@ func (s *ServiceImp) LoginUser(body *authcontract.PostLoginBody) (string, error)
     }
 
     return t, nil
+}
+
+func (s *ServiceImp) CreateUser(body *authcontract.PostSigninBody) (*User, error) {
+    user, err := NewUser(body.Username, body.Email, body.Password)
+
+    if err != nil {
+        return nil, err
+    }
+
+    return s.Repository.CreateUser(user)
 }
