@@ -8,6 +8,6 @@ CREATE TABLE my_blog.users (
     password varchar(255) NOT NULL
 );
 
-CREATE UNIQUE INDEX users_xid ON users(xid);
-CREATE UNIQUE INDEX users_username ON users(username);
-CREATE UNIQUE INDEX users_email ON users(email);
+CREATE UNIQUE INDEX users_xid ON my_blog.users(xid);
+CREATE UNIQUE INDEX users_username ON my_blog.users(username);
+CREATE UNIQUE INDEX users_email ON my_blog.users(email);
