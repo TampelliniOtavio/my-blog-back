@@ -22,9 +22,17 @@ func ErrorHandler (ctx *fiber.Ctx, err error) error {
     }
 
     log.Error(err.Error())
-    err = ctx.Status(code).JSON(fiber.Map{"message": errMessage})
+    err = ctx.Status(code).JSON(fiber.Map{
+        "message": errMessage,
+        "success": false,
+    })
     if err != nil {
-        return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Internal Server Error"})
+        return ctx.Status(fiber.StatusInternalServerError).JSON(
+            fiber.Map{
+                "message": "Internal Server Error",
+                "success": false,
+            },
+        )
     }
 
     return nil
