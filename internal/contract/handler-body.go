@@ -8,33 +8,35 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type HandlerEssentials struct{
-    DB *sqlx.DB
-    Api fiber.Router
+type HandlerEssentials struct {
+	DB  *sqlx.DB
+	Api fiber.Router
 }
 
 func (h *HandlerEssentials) GetUserFromContext(ctx *fiber.Ctx) (*auth.AuthClaims, error) {
-    user, ok := ctx.Locals("user").(*jwt.Token)
+	user, ok := ctx.Locals("user").(*jwt.Token)
 
-    if !ok {
-        return nil, internalerrors.NotAuthorizedError
-    }
+	if !ok {
+		return nil, internalerrors.NotAuthorizedError
+	}
 
-    claims, ok := user.Claims.(jwt.MapClaims)
+	claims, ok := user.Claims.(jwt.MapClaims)
 
-    if !ok {
-        return nil, internalerrors.NotAuthorizedError
-    }
+	if !ok {
+		return nil, internalerrors.NotAuthorizedError
+	}
 
-    data, ok := claims["data"].(map[string]interface{})
+	data, ok := claims["data"].(map[string]interface{})
 
-    if !ok {
-        return nil, internalerrors.NotAuthorizedError
-    }
+	if !ok {
+		return nil, internalerrors.NotAuthorizedError
+	}
 
-    authClaims := auth.AuthClaims{
-        Name: data["name"].(string),
-    }
+	authClaims := auth.AuthClaims{
+		Xid:  data["xid"].(string),
+		Id:   int64(data["id"].(float64)),
+		Name: data["name"].(string),
+	}
 
-    return &authClaims, nil
+	return &authClaims, nil
 }

@@ -23,3 +23,14 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 
 	return &posts, nil
 }
+
+func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
+	var newPost post.Post
+	err := r.DB.QueryRowx("INSERT INTO my_blog.posts(xid, post, created_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *", insertPost.Xid, insertPost.Post, insertPost.CreatedBy, insertPost.CreatedAt, insertPost.UpdatedAt).StructScan(&newPost)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &newPost, nil
+}

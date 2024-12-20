@@ -6,40 +6,42 @@ import (
 	"github.com/rs/xid"
 )
 
-type AuthClaims struct{
-    Name    string  `json:"name"`
+type AuthClaims struct {
+	Xid  string `json:"xid"`
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
-type User struct{
-    Id       int64  `validate:"required" json:"-"`
-    Xid      string `validate:"required"`
-    Username string `validate:"required"`
-    Password string `validate:"required" json:"-"`
-    Email    string `validate:"required,email"`
+type User struct {
+	Id       int64  `validate:"required" json:"-"`
+	Xid      string `validate:"required"`
+	Username string `validate:"required"`
+	Password string `validate:"required" json:"-"`
+	Email    string `validate:"required,email"`
 }
 
-func NewUser (username string, email string, password string) (*User, error) {
-    encrypted, err := encrypt.HashPassword(password)
+func NewUser(username string, email string, password string) (*User, error) {
+	encrypted, err := encrypt.HashPassword(password)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    user := User{
-        Id: -1,
-        Xid: xid.New().String(),
-        Username: username,
-        Email: email,
-        Password: password,
-    }
+	user := User{
+		Id:       -1,
+		Xid:      xid.New().String(),
+		Username: username,
+		Email:    email,
+		Password: password,
+	}
 
-    err = internalerrors.ValidateStruct(user)
+	err = internalerrors.ValidateStruct(user)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    user.Password = encrypted
+	user.Password = encrypted
 
-    return &user, nil
+	return &user, nil
 }

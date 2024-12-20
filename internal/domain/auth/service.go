@@ -10,52 +10,54 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type Service interface{
-    LoginUser(body *authcontract.PostLoginBody) (string, error)
-    CreateUser(body *authcontract.PostSigninBody) (*User, error)
+type Service interface {
+	LoginUser(body *authcontract.PostLoginBody) (string, error)
+	CreateUser(body *authcontract.PostSigninBody) (*User, error)
 }
 
-type ServiceImp struct{
-    Repository Repository
+type ServiceImp struct {
+	Repository Repository
 }
 
 func (s *ServiceImp) LoginUser(body *authcontract.PostLoginBody) (string, error) {
-    user, err := s.Repository.GetByUsername(body.Username)
+	user, err := s.Repository.GetByUsername(body.Username)
 
-    if err != nil {
-        return "", fiber.NewError(400, "Incorrect Username or Password")
-    }
+	if err != nil {
+		return "", fiber.NewError(400, "Incorrect Username or Password")
+	}
 
-    if !encrypt.VerifyPassword(user.Password, body.Password) {
-        return "", fiber.NewError(400, "Incorrect Username or Password")
-    }
+	if !encrypt.VerifyPassword(user.Password, body.Password) {
+		return "", fiber.NewError(400, "Incorrect Username or Password")
+	}
 
-    claims := &jwt.MapClaims{
-        "ExpiresAt": jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-        "IssuedAt":  jwt.NewNumericDate(time.Now()),
-        "NotBefore": jwt.NewNumericDate(time.Now()),
-        "data": &AuthClaims{
-            Name: user.Email,
-        },
-    }
+	claims := &jwt.MapClaims{
+		"ExpiresAt": jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		"IssuedAt":  jwt.NewNumericDate(time.Now()),
+		"NotBefore": jwt.NewNumericDate(time.Now()),
+		"data": &AuthClaims{
+			Xid:  user.Xid,
+			Id:   user.Id,
+			Name: user.Email,
+		},
+	}
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-    t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 
-    if err != nil {
-        return "", fiber.ErrInternalServerError
-    }
+	if err != nil {
+		return "", fiber.ErrInternalServerError
+	}
 
-    return t, nil
+	return t, nil
 }
 
 func (s *ServiceImp) CreateUser(body *authcontract.PostSigninBody) (*User, error) {
-    user, err := NewUser(body.Username, body.Email, body.Password)
+	user, err := NewUser(body.Username, body.Email, body.Password)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return s.Repository.CreateUser(user)
+	return s.Repository.CreateUser(user)
 }
