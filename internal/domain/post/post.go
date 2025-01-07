@@ -7,11 +7,12 @@ import (
 )
 
 type Post struct {
-	Xid       string `validate:"required" json:"xid"`
-	Post      string `validate:"required" json:"post"`
-	CreatedBy int64  `validate:"required" db:"created_by" json:"createdBy"`
-	CreatedAt string `validate:"required,datetime" db:"created_at" json:"createdAt"`
-	UpdatedAt string `validate:"required,datetime" db:"updated_at" json:"updatedAt"`
+	Xid           string `validate:"required" json:"xid"`
+	Post          string `validate:"required" json:"post"`
+	CreatedBy     int64  `validate:"required" db:"created_by" json:"-"`
+	CreatedByName string `db:"username" json:"createdBy"`
+	CreatedAt     string `validate:"required,datetime" db:"created_at" json:"createdAt"`
+	UpdatedAt     string `validate:"required,datetime" db:"updated_at" json:"updatedAt"`
 }
 
 func NewPost(post string, createdBy int64) (*Post, error) {
