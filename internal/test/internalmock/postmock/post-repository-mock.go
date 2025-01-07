@@ -34,3 +34,16 @@ func (c *RepositoryMock) AddPost(newPost *post.Post) (*post.Post, error) {
 
 	return first.(*post.Post), err
 }
+
+func (c *RepositoryMock) GetPost(xid string) (*post.Post, error) {
+	args := c.Called(xid)
+
+	first := args.Get(0)
+	err := args.Error(1)
+
+	if first == nil {
+		return nil, err
+	}
+
+	return first.(*post.Post), err
+}

@@ -60,3 +60,26 @@ func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 
 	return &newPost, nil
 }
+
+func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
+	var post post.Post
+
+	err := r.DB.QueryRowx(
+		"SELECT "+
+			"posts.xid, "+
+			"posts.post, "+
+			"posts.created_at, "+
+			"posts.updated_at, "+
+			"users.username "+
+			"FROM my_blog.posts AS posts "+
+			"INNER JOIN my_blog.users AS users ON users.id = posts.created_by "+
+		"WHERE posts.xid = $1",
+		xid,
+	).StructScan(&post)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}

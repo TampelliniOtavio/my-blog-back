@@ -1,10 +1,12 @@
 package post_test
 
 import (
+	"errors"
 	"testing"
 
 	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
 	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/postmock"
 	"github.com/stretchr/testify/assert"
@@ -120,4 +122,57 @@ func Test_AddPost_validate_post_required(t *testing.T) {
 	assert.Nil(addedPost)
 	assert.NotNil(err)
 	assert.Equal(err.Error(), "post is required")
+}
+
+func Test_GetPost_ShouldReturn(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(&newPost, nil)
+	service.Repository = repository
+
+	currPost, err := service.GetPost(newPost.Xid)
+
+	assert.Nil(err)
+	assert.NotNil(currPost)
+	assert.Equal(currPost.Xid, newPost.Xid)
+}
+
+func Test_GetPost_ShouldNotFind(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(nil, errors.New(databaseerror.NOT_FOUND))
+	service.Repository = repository
+
+	currPost, err := service.GetPost("xid-not-valid")
+
+	assert.Nil(currPost)
+	assert.NotNil(err)
+	assert.Equal(err.Error(), "Post Not Found") 
+}
+
+func Test_GetPost_ShouldReturnGenericError(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	errorMessage := "Any Error"
+
+	repository.On("GetPost", mock.Anything).Return(nil, errors.New(errorMessage))
+	service.Repository = repository
+
+	currPost, err := service.GetPost(newPost.Xid)
+
+	assert.Nil(currPost)
+	assert.NotNil(err)
+	assert.Equal(err.Error(), errorMessage) 
 }

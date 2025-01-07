@@ -2,11 +2,13 @@ package post
 
 import (
 	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Service interface {
 	ListAllPosts(limit int, offset int) (*[]Post, error)
+	GetPost(xid string) (*Post, error)
 	AddPost(body *postcontract.PostAddPostBody, createdBy int64) (*Post, error)
 }
 
@@ -33,4 +35,18 @@ func (s *ServiceImp) AddPost(body *postcontract.PostAddPostBody, createdBy int64
 	}
 
 	return s.Repository.AddPost(post)
+}
+
+func (s *ServiceImp) GetPost(xid string) (*Post, error) {
+	post, err := s.Repository.GetPost(xid)
+
+	if err == nil {
+		return post, nil
+	}
+
+	if err.Error() == databaseerror.NOT_FOUND {
+		return nil, fiber.NewError(404, "Post Not Found")
+	}
+
+	return nil, err
 }
