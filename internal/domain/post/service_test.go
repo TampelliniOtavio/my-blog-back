@@ -214,3 +214,40 @@ func Test_AddLikeToPost_PostNotFound(t *testing.T) {
 
 	assert.Equal(err.Error(), "Post Not Found")
 }
+
+func Test_RemoveLikeFromPost_Removed(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(&newPost, nil)
+	repository.On("RemoveLikeFromPost", mock.Anything, mock.Anything).Return(nil)
+	service.Repository = repository
+
+	updatedPost, err := service.RemoveLikeFromPost("randomxid", 1)
+
+	assert.NotNil(updatedPost)
+	assert.Nil(err)
+
+	assert.Equal(newPost.LikeCount, updatedPost.LikeCount)
+}
+
+func Test_RemoveLikeToPost_PostNotFound(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(nil, errors.New("Not Found"))
+	service.Repository = repository
+
+	updatedPost, err := service.RemoveLikeFromPost("randomxid", 1)
+
+	assert.Nil(updatedPost)
+	assert.NotNil(err)
+
+	assert.Equal(err.Error(), "Post Not Found")
+}

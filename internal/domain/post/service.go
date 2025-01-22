@@ -13,6 +13,7 @@ type Service interface {
 	GetPost(xid string) (*Post, error)
 	AddPost(body *postcontract.PostAddPostBody, createdBy int64) (*Post, error)
 	AddLikeToPost(postXid string, userId int64) (*Post, error)
+	RemoveLikeFromPost(postXid string, userId int64) (*Post, error)
 }
 
 type ServiceImp struct {
@@ -72,6 +73,28 @@ func (s ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) {
 	}
 
 	post.LikeCount += 1
+
+	return post, nil
+}
+
+func (s ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, error) {
+	post, err := s.GetPost(postXid)
+
+	if err != nil {
+		return nil, fiber.NewError(404, "Post Not Found")
+	}
+
+	err = s.Repository.RemoveLikeFromPost(post, userId)
+
+	if err != nil {
+		if err.Error() == "Liked Post Not Found" {
+			return post, nil
+		}
+
+		return nil, err
+	}
+
+	post.LikeCount -= 1
 
 	return post, nil
 }

@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/jmoiron/sqlx"
@@ -111,6 +112,37 @@ func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
 			my_blog.posts
 		SET
 			like_count = like_count + 1
+		WHERE
+			xid = $1
+		`, post.Xid)
+
+		return err
+	})
+}
+
+func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error {
+	return WithTransaction(r.db, func(tx *sql.Tx) error {
+		exec, err := tx.Exec(`
+		DELETE FROM
+			my_blog.likes_post
+		WHERE
+			user_id = $1 AND
+			post_xid = $2
+		`, userId, post.Xid)
+
+		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
+			return errors.New("Liked Post Not Found")
+		}
+
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(`
+		UPDATE
+			my_blog.posts
+		SET
+			like_count = like_count - 1
 		WHERE
 			xid = $1
 		`, post.Xid)
