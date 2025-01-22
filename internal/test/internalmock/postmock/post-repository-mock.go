@@ -47,3 +47,9 @@ func (c *RepositoryMock) GetPost(xid string) (*post.Post, error) {
 
 	return first.(*post.Post), err
 }
+
+func (c *RepositoryMock) AddLikeToPost(post *post.Post, userId int64) error {
+	args := c.Called(post, userId)
+
+	return args.Error(0)
+}

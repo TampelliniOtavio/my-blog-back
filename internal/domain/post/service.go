@@ -1,6 +1,8 @@
 package post
 
 import (
+	"strings"
+
 	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	"github.com/gofiber/fiber/v2"
@@ -10,6 +12,7 @@ type Service interface {
 	ListAllPosts(limit int, offset int) (*[]Post, error)
 	GetPost(xid string) (*Post, error)
 	AddPost(body *postcontract.PostAddPostBody, createdBy int64) (*Post, error)
+	AddLikeToPost(postXid string, userId int64) (*Post, error)
 }
 
 type ServiceImp struct {
@@ -49,4 +52,26 @@ func (s *ServiceImp) GetPost(xid string) (*Post, error) {
 	}
 
 	return nil, err
+}
+
+func (s ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) {
+	post, err := s.GetPost(postXid)
+
+	if err != nil {
+		return nil, fiber.NewError(404, "Post Not Found")
+	}
+
+	err = s.Repository.AddLikeToPost(post, userId)
+
+	if err != nil {
+		if strings.Index(err.Error(), "likes_post_one_user_per_post") > -1 {
+			return post, nil
+		}
+
+		return nil, err
+	}
+
+	post.LikeCount += 1
+
+	return post, nil
 }

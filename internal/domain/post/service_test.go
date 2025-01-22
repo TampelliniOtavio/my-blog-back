@@ -17,11 +17,12 @@ var (
 	service = post.ServiceImp{}
 	posts   = []post.Post{}
 	newPost = post.Post{
-		Xid:       "randomxid",
-		Post:      "New Post",
-		CreatedBy: 1,
-		CreatedAt: formatter.CurrentTimestamp(),
-		UpdatedAt: formatter.CurrentTimestamp(),
+		Xid:          "randomxid",
+		Post:         "New Post",
+		CreatedBy:    1,
+		LikeCount:    0,
+		CreatedAt:    formatter.CurrentTimestamp(),
+		UpdatedAt:    formatter.CurrentTimestamp(),
 	}
 	addPostBody = postcontract.PostAddPostBody{
 		Post: newPost.Post,
@@ -155,7 +156,7 @@ func Test_GetPost_ShouldNotFind(t *testing.T) {
 
 	assert.Nil(currPost)
 	assert.NotNil(err)
-	assert.Equal(err.Error(), "Post Not Found") 
+	assert.Equal(err.Error(), "Post Not Found")
 }
 
 func Test_GetPost_ShouldReturnGenericError(t *testing.T) {
@@ -174,5 +175,42 @@ func Test_GetPost_ShouldReturnGenericError(t *testing.T) {
 
 	assert.Nil(currPost)
 	assert.NotNil(err)
-	assert.Equal(err.Error(), errorMessage) 
+	assert.Equal(err.Error(), errorMessage)
+}
+
+func Test_AddLikeToPost_Added(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(&newPost, nil)
+	repository.On("AddLikeToPost", mock.Anything, mock.Anything).Return(nil)
+	service.Repository = repository
+
+	updatedPost, err := service.AddLikeToPost("randomxid", 1)
+
+	assert.NotNil(updatedPost)
+	assert.Nil(err)
+
+	assert.Equal(newPost.LikeCount, updatedPost.LikeCount)
+}
+
+func Test_AddLikeToPost_PostNotFound(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(nil, errors.New("Not Found"))
+	service.Repository = repository
+
+	updatedPost, err := service.AddLikeToPost("randomxid", 1)
+
+	assert.Nil(updatedPost)
+	assert.NotNil(err)
+
+	assert.Equal(err.Error(), "Post Not Found")
 }

@@ -9,4 +9,5 @@ func (h *Handler) DefineRoutes() {
 
 	router.Use(middleware.Protected())
 	router.Post("/", h.postAddPost).Name("add")
+	router.Post("/:xid/like", h.PostAddLikeToPost).Name("like")
 }
