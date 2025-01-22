@@ -5,11 +5,9 @@ import (
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jmoiron/sqlx"
 )
 
 type HandlerEssentials struct {
-	DB  *sqlx.DB
 	Api fiber.Router
 }
 

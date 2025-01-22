@@ -14,7 +14,7 @@ import (
 func main() {
 	err := godotenv.Load()
 
-	db := database.NewDB()
+	repo, db := database.NewRepository()
 	defer db.Close()
 
 	if err != nil {
@@ -28,7 +28,7 @@ func main() {
 		ErrorHandler: endpoints.ErrorHandler,
 	})
 
-	endpoints.DefineRoutes(app, db)
+	endpoints.DefineRoutes(app, repo)
 
 	printRoutes(app)
 

@@ -1,23 +1,30 @@
 package database
 
 import (
+	"database/sql"
+
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/jmoiron/sqlx"
 )
 
 type PostRepository struct {
-	DB *sqlx.DB
+	db *sqlx.DB
+}
+
+func NewPostRepository(db *sqlx.DB) *PostRepository {
+	return &PostRepository{db}
 }
 
 func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error) {
 	var posts []post.Post
-	err := r.DB.Select(
+	err := r.db.Select(
 		&posts,
 		"SELECT "+
 			"posts.xid, "+
 			"posts.post, "+
 			"posts.created_at, "+
 			"posts.updated_at, "+
+			"posts.like_count, "+
 			"users.username "+
 			"FROM my_blog.posts AS posts "+
 			"INNER JOIN my_blog.users AS users ON users.id = posts.created_by "+
@@ -39,7 +46,7 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 
 func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 	var newPost post.Post
-	err := r.DB.QueryRowx(
+	err := r.db.QueryRowx(
 		"with posts as ( "+
 			"	insert into "+
 			"	my_blog.posts (xid, post, created_by, created_at, updated_at) "+
@@ -64,16 +71,17 @@ func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 	var post post.Post
 
-	err := r.DB.QueryRowx(
+	err := r.db.QueryRowx(
 		"SELECT "+
 			"posts.xid, "+
 			"posts.post, "+
 			"posts.created_at, "+
 			"posts.updated_at, "+
+			"posts.like_count, "+
 			"users.username "+
 			"FROM my_blog.posts AS posts "+
 			"INNER JOIN my_blog.users AS users ON users.id = posts.created_by "+
-		"WHERE posts.xid = $1",
+			"WHERE posts.xid = $1",
 		xid,
 	).StructScan(&post)
 
@@ -82,4 +90,31 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 	}
 
 	return &post, nil
+}
+
+func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
+	return WithTransaction(r.db, func(tx *sql.Tx) error {
+		_, err := tx.Exec(`
+		INSERT INTO
+			my_blog.likes_post
+			(user_id, post_xid)
+		values
+			($1, $2)
+		`, userId, post.Xid)
+
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(`
+		UPDATE
+			my_blog.posts
+		SET
+			like_count = like_count + 1
+		WHERE
+			xid = $1
+		`, post.Xid)
+
+		return err
+	})
 }
