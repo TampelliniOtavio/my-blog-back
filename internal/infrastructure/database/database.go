@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"os"
 
@@ -37,8 +38,10 @@ func NewRepository() (*Repository, *sqlx.DB) {
 	}, db
 }
 
-func WithTransaction (db *sqlx.DB, fn func(tx *sql.Tx) error) error {
-	tx, err := db.Begin()
+func WithTransaction(db *sqlx.DB, fn func(tx *sqlx.Tx) error) error {
+	tx, err := db.BeginTxx(context.Background(), &sql.TxOptions{
+		Isolation: sql.LevelSerializable,
+	})
 
 	if err != nil {
 		return err

@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"errors"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
@@ -94,7 +93,7 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 }
 
 func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
-	return WithTransaction(r.db, func(tx *sql.Tx) error {
+	return WithTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
 		INSERT INTO
 			my_blog.likes_post
@@ -121,7 +120,7 @@ func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
 }
 
 func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error {
-	return WithTransaction(r.db, func(tx *sql.Tx) error {
+	return WithTransaction(r.db, func(tx *sqlx.Tx) error {
 		exec, err := tx.Exec(`
 		DELETE FROM
 			my_blog.likes_post
