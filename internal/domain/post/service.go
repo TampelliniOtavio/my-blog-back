@@ -5,6 +5,7 @@ import (
 
 	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -50,17 +51,17 @@ func (s *ServiceImp) GetPost(xid string) (*Post, error) {
 	}
 
 	if err.Error() == databaseerror.NOT_FOUND {
-		return nil, fiber.NewError(404, "Post Not Found")
+		return nil, internalerrors.NotFound("Post")
 	}
 
 	return nil, err
 }
 
-func (s ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) {
+func (s *ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) {
 	post, err := s.GetPost(postXid)
 
 	if err != nil {
-		return nil, fiber.NewError(404, "Post Not Found")
+		return nil, internalerrors.NotFound("Post")
 	}
 
 	err = s.Repository.AddLikeToPost(post, userId)
@@ -78,11 +79,11 @@ func (s ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) {
 	return post, nil
 }
 
-func (s ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, error) {
+func (s *ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, error) {
 	post, err := s.GetPost(postXid)
 
 	if err != nil {
-		return nil, fiber.NewError(404, "Post Not Found")
+		return nil, internalerrors.NotFound("Post")
 	}
 
 	err = s.Repository.RemoveLikeFromPost(post, userId)

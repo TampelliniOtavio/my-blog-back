@@ -1,8 +1,6 @@
 package database
 
 import (
-	"errors"
-
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/jmoiron/sqlx"
@@ -131,7 +129,7 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 		`, userId, post.Xid)
 
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
-			return errors.New("Liked Post Not Found")
+			return internalerrors.NotFound("Liked Post")
 		}
 
 		if err != nil {
