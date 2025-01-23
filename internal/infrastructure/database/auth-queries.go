@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 )
@@ -47,6 +49,10 @@ func handleError(err error) error {
 
 	if strings.Index(errMessage, "duplicate key value violates unique constraint \"users_email\"") != -1 {
 		return fiber.NewError(400, "Email already exists")
+	}
+
+	if err.Error() == databaseerror.NOT_FOUND {
+		return internalerrors.NotFound("User")
 	}
 
 	return err
