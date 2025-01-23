@@ -18,16 +18,18 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 	var posts []post.Post
 	err := r.db.Select(
 		&posts,
-		"SELECT "+
-			"posts.xid, "+
-			"posts.post, "+
-			"posts.created_at, "+
-			"posts.updated_at, "+
-			"posts.like_count, "+
-			"users.username "+
-			"FROM my_blog.posts AS posts "+
-			"INNER JOIN my_blog.users AS users ON users.id = posts.created_by "+
-			"LIMIT $1 OFFSET $2",
+		`SELECT
+			posts.xid,
+			posts.post,
+			posts.created_at,
+			posts.updated_at,
+			posts.like_count,
+			posts.deleted_at,
+			users.username
+		FROM my_blog.posts AS posts
+		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
+		WHERE posts.deleted_at IS NULL
+		LIMIT $1 OFFSET $2`,
 		limit,
 		offset,
 	)
@@ -46,13 +48,21 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 	var newPost post.Post
 	err := r.db.QueryRowx(
-		"with posts as ( "+
-			"	insert into "+
-			"	my_blog.posts (xid, post, created_by, created_at, updated_at) "+
-			"	values ($1, $2, $3, $4, $5) "+
-			"	returning * "+
-			") select posts.xid, posts.post, posts.created_at, posts.updated_at, users.username from posts "+
-			"inner join my_blog.users ON users.id = posts.created_by;",
+		`with posts as (
+			insert into
+			my_blog.posts (xid, post, created_by, created_at, updated_at)
+			values ($1, $2, $3, $4, $5)
+			returning *
+		) select
+			posts.xid,
+			posts.post,
+			posts.created_at,
+			posts.updated_at,
+			posts.like_count,
+			posts.deleted_at,
+			users.username
+		from posts
+		inner join my_blog.users ON users.id = posts.created_by;`,
 		insertPost.Xid,
 		insertPost.Post,
 		insertPost.CreatedBy,
@@ -71,16 +81,17 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 	var post post.Post
 
 	err := r.db.QueryRowx(
-		"SELECT "+
-			"posts.xid, "+
-			"posts.post, "+
-			"posts.created_at, "+
-			"posts.updated_at, "+
-			"posts.like_count, "+
-			"users.username "+
-			"FROM my_blog.posts AS posts "+
-			"INNER JOIN my_blog.users AS users ON users.id = posts.created_by "+
-			"WHERE posts.xid = $1",
+		`SELECT
+			posts.xid,
+			posts.post,
+			posts.created_at,
+			posts.updated_at,
+			posts.like_count,
+			posts.deleted_at,
+			users.username
+		FROM my_blog.posts AS posts
+		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
+		WHERE posts.xid = $1`,
 		xid,
 	).StructScan(&post)
 
