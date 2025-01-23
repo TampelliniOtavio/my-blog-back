@@ -3,7 +3,7 @@ package postendpoint
 
 import "github.com/gofiber/fiber/v2"
 
-func (h *Handler) PostRemoveLikeFromPost(ctx *fiber.Ctx) error {
+func (h *Handler) postRemoveLikeFromPost(ctx *fiber.Ctx) error {
     user, err := h.Helper.GetUserFromContext(ctx)
 
     if err != nil {

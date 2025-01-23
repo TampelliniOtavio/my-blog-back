@@ -2,7 +2,7 @@ package postendpoint
 
 import "github.com/gofiber/fiber/v2"
 
-func (h *Handler) PostAddLikeToPost(ctx *fiber.Ctx) error {
+func (h *Handler) postAddLikeToPost(ctx *fiber.Ctx) error {
     user, err := h.Helper.GetUserFromContext(ctx)
 
     if err != nil {
