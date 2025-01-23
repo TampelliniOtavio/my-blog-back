@@ -1,7 +1,10 @@
 package database
 
 import (
+	"strings"
+
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/jmoiron/sqlx"
 )
@@ -25,6 +28,7 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 			posts.updated_at,
 			posts.like_count,
 			posts.deleted_at,
+			users.id as created_by,
 			users.username
 		FROM my_blog.posts AS posts
 		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
@@ -60,9 +64,10 @@ func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 			posts.updated_at,
 			posts.like_count,
 			posts.deleted_at,
+			users.id as created_by,
 			users.username
 		from posts
-		inner join my_blog.users ON users.id = posts.created_by;`,
+		inner join my_blog.users ON users.id = posts.created_by`,
 		insertPost.Xid,
 		insertPost.Post,
 		insertPost.CreatedBy,
@@ -71,7 +76,7 @@ func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 	).StructScan(&newPost)
 
 	if err != nil {
-		return nil, err
+		return nil, r.handleError(err)
 	}
 
 	return &newPost, nil
@@ -88,6 +93,7 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 			posts.updated_at,
 			posts.like_count,
 			posts.deleted_at,
+			users.id as created_by,
 			users.username
 		FROM my_blog.posts AS posts
 		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
@@ -96,6 +102,10 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 	).StructScan(&post)
 
 	if err != nil {
+		if err.Error() == databaseerror.NOT_FOUND {
+			return nil, internalerrors.NotFound("Post")
+		}
+
 		return nil, err
 	}
 
@@ -103,7 +113,7 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 }
 
 func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
-	return WithTransaction(r.db, func(tx *sqlx.Tx) error {
+	return r.handleError(WithTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
 		INSERT INTO
 			my_blog.likes_post
@@ -126,7 +136,7 @@ func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
 		`, post.Xid)
 
 		return err
-	})
+	}))
 }
 
 func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error {
@@ -173,12 +183,28 @@ func (r *PostRepository) DeletePost(post *post.Post, userId int64) error {
 	`, post.Xid, userId)
 
 	if err != nil {
-		return err
+		return r.handleError(err)
 	}
 	rows, err := result.RowsAffected()
 
 	if rows == 0 {
 		return internalerrors.NotFound("Post")
+	}
+
+	return r.handleError(err)
+}
+
+func (p *PostRepository) handleError(err error) error {
+	if err == nil {
+		return err
+	}
+
+	if strings.Index(err.Error(), "violates foreign key constraint \"posts_users_fk\"") > -1 {
+		return internalerrors.NotFound("User")
+	}
+
+	if strings.Index(err.Error(), "violates unique constraint \"likes_post_one_user_per_post\"") > -1 {
+		return internalerrors.BadRequest("User Already Liked the post")
 	}
 
 	return err

@@ -1,8 +1,6 @@
 package post
 
 import (
-	"strings"
-
 	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
@@ -67,7 +65,7 @@ func (s *ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) 
 	err = s.Repository.AddLikeToPost(post, userId)
 
 	if err != nil {
-		if strings.Index(err.Error(), "likes_post_one_user_per_post") > -1 {
+		if err.Error() == "User Already Liked the post" {
 			return post, nil
 		}
 
