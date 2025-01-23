@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -148,4 +149,28 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 
 		return err
 	})
+}
+
+func (r *PostRepository) DeletePost(post *post.Post, userId int64) error {
+	result, err := r.db.Exec(`
+	UPDATE
+		my_blog.posts
+	SET
+		deleted_at = now()
+	WHERE
+		xid = $1 AND
+		created_by = $2 AND
+		deleted_at IS NULL
+	`, post.Xid, userId)
+
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+
+	if rows == 0 {
+		return internalerrors.NotFound("Post")
+	}
+
+	return err
 }

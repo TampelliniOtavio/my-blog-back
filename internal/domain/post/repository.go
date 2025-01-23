@@ -6,4 +6,5 @@ type Repository interface {
 	GetPost(xid string) (*Post, error)
 	AddLikeToPost(post *Post, userId int64) error
 	RemoveLikeFromPost(post *Post, userId int64) error
+	DeletePost(post *Post, userId int64) error
 }

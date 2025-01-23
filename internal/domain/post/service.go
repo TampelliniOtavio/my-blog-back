@@ -14,6 +14,7 @@ type Service interface {
 	AddPost(body *postcontract.PostAddPostBody, createdBy int64) (*Post, error)
 	AddLikeToPost(postXid string, userId int64) (*Post, error)
 	RemoveLikeFromPost(postXid string, userId int64) (*Post, error)
+	DeletePost(postXid string, userId int64) (*Post, error)
 }
 
 type ServiceImp struct {
@@ -95,6 +96,24 @@ func (s ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, err
 	}
 
 	post.LikeCount -= 1
+
+	return post, nil
+}
+
+func (s *ServiceImp) DeletePost(postXid string, userId int64) (*Post, error) {
+	post, err := s.GetPost(postXid)
+
+	if err != nil {
+		return nil, internalerrors.NotFound("Post")
+	}
+
+	err = s.Repository.DeletePost(post, userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	post, _ = s.GetPost(postXid)
 
 	return post, nil
 }

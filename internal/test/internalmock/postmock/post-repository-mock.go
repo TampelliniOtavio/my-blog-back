@@ -59,3 +59,9 @@ func (c *RepositoryMock) RemoveLikeFromPost(post *post.Post, userId int64) error
 
 	return args.Error(0)
 }
+
+func (c *RepositoryMock) DeletePost(post *post.Post, userId int64) error {
+	args := c.Called(post, userId)
+
+	return args.Error(0)
+}

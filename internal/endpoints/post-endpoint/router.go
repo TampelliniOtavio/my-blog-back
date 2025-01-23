@@ -11,4 +11,5 @@ func (h *Handler) DefineRoutes() {
 	router.Post("/", h.postAddPost).Name("add")
 	router.Post("/:xid/like", h.PostAddLikeToPost).Name("like")
 	router.Post("/:xid/dislike", h.PostRemoveLikeFromPost).Name("dislike")
+	router.Delete("/:xid", h.deletePost).Name("delete")
 }
