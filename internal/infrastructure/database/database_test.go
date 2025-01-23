@@ -14,7 +14,6 @@ import (
 var (
 	conn *sqlx.DB
 	repo *database.Repository
-	postRepo *database.PostRepository
 )
 
 func TestMain(m *testing.M) {

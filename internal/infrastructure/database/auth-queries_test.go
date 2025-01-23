@@ -4,19 +4,10 @@ import (
 	"testing"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
-	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/util"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/stretchr/testify/assert"
 )
-
-var (
-	authRepo *database.AuthRepository
-)
-
-func TestInit(t *testing.T) {
-	authRepo = repo.Auth
-}
 
 func generateRandomUser() *auth.User {
 	user, _ := auth.NewUser(
@@ -29,7 +20,7 @@ func generateRandomUser() *auth.User {
 }
 
 func createUser(user *auth.User) (*auth.User, error) {
-	return authRepo.CreateUser(user)
+	return repo.Auth.CreateUser(user)
 }
 
 func Test_createUser_Insert(t *testing.T) {
@@ -85,7 +76,7 @@ func Test_GetByUsername_FindUser(t *testing.T) {
 
 	createUser(insertUser)
 
-	selectedUser, err := authRepo.GetByUsername(insertUser.Username)
+	selectedUser, err := repo.Auth.GetByUsername(insertUser.Username)
 
 	assert.NotNil(selectedUser)
 	assert.Nil(err)
@@ -99,7 +90,7 @@ func Test_GetByUsername_FindUser(t *testing.T) {
 func Test_GetByUsername_UserNotFound(t *testing.T) {
 	assert := assert.New(t)
 
-	selectedUser, err := authRepo.GetByUsername(util.RandomString(5))
+	selectedUser, err := repo.Auth.GetByUsername(util.RandomString(5))
 
 	assert.Nil(selectedUser)
 	assert.NotNil(err)
