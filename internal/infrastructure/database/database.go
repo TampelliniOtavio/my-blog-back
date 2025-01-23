@@ -30,12 +30,16 @@ func newDB() *sqlx.DB {
 	return db
 }
 
-func NewRepository() (*Repository, *sqlx.DB) {
-	db := newDB()
+func NewRawRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Auth: NewAuthRepository(db),
 		Post: NewPostRepository(db),
-	}, db
+	}
+}
+
+func NewRepository() (*Repository, *sqlx.DB) {
+	db := newDB()
+	return NewRawRepository(db), db
 }
 
 func WithTransaction(db *sqlx.DB, fn func(tx *sqlx.Tx) error) error {
