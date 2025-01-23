@@ -126,21 +126,26 @@ func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
 			return err
 		}
 
-		_, err = tx.Exec(`
+		exec, err := tx.Exec(`
 		UPDATE
 			my_blog.posts
 		SET
 			like_count = like_count + 1
 		WHERE
-			xid = $1
+			xid = $1 AND
+			deleted_at IS NULL
 		`, post.Xid)
+	
+		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
+			return internalerrors.NotFound("Liked Post")
+		}
 
 		return err
 	}))
 }
 
 func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error {
-	return WithTransaction(r.db, func(tx *sqlx.Tx) error {
+	return r.handleError(WithTransaction(r.db, func(tx *sqlx.Tx) error {
 		exec, err := tx.Exec(`
 		DELETE FROM
 			my_blog.likes_post
@@ -152,22 +157,23 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
 			return internalerrors.NotFound("Liked Post")
 		}
-
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(`
+	
+		exec, err = tx.Exec(`
 		UPDATE
 			my_blog.posts
 		SET
 			like_count = like_count - 1
 		WHERE
-			xid = $1
+			xid = $1 AND
+			deleted_at IS NULL
 		`, post.Xid)
+	
+		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
+			return internalerrors.NotFound("Liked Post")
+		}
 
 		return err
-	})
+	}))
 }
 
 func (r *PostRepository) DeletePost(post *post.Post, userId int64) error {

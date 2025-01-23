@@ -87,10 +87,6 @@ func (s *ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, er
 	err = s.Repository.RemoveLikeFromPost(post, userId)
 
 	if err != nil {
-		if err.Error() == "Liked Post Not Found" {
-			return post, nil
-		}
-
 		return nil, err
 	}
 
