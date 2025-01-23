@@ -1,7 +1,6 @@
 package database_test
 
 import (
-	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -34,7 +33,6 @@ func TestMain(m *testing.M) {
 
 
 	connStr := "postgres://" + username + ":" + password + "@" + host + "/" + db_name + "?sslmode=disable"
-	fmt.Println(connStr)
 	db, err := sqlx.Connect("postgres", connStr)
 
 	if err != nil {
