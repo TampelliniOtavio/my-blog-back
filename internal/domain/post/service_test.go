@@ -7,7 +7,9 @@ import (
 	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
+	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/databasetypes"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/postmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -17,12 +19,21 @@ var (
 	service = post.ServiceImp{}
 	posts   = []post.Post{}
 	newPost = post.Post{
-		Xid:          "randomxid",
-		Post:         "New Post",
-		CreatedBy:    1,
-		LikeCount:    0,
-		CreatedAt:    formatter.CurrentTimestamp(),
-		UpdatedAt:    formatter.CurrentTimestamp(),
+		Xid:       "randomxid",
+		Post:      "New Post",
+		CreatedBy: 1,
+		LikeCount: 0,
+		CreatedAt: formatter.CurrentTimestamp(),
+		UpdatedAt: formatter.CurrentTimestamp(),
+	}
+	deletedPost = post.Post{
+		Xid:       "randomxid",
+		Post:      "New Post",
+		CreatedBy: 1,
+		LikeCount: 0,
+		CreatedAt: formatter.CurrentTimestamp(),
+		UpdatedAt: formatter.CurrentTimestamp(),
+		DeletedAt: databasetypes.NewNullString(formatter.CurrentTimestamp()),
 	}
 	addPostBody = postcontract.PostAddPostBody{
 		Post: newPost.Post,
@@ -250,4 +261,63 @@ func Test_RemoveLikeToPost_PostNotFound(t *testing.T) {
 	assert.NotNil(err)
 
 	assert.Equal(err.Error(), "Post Not Found")
+}
+
+func Test_DeletePost_Deleted(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(&deletedPost, nil)
+	repository.On("DeletePost", mock.Anything, mock.Anything).Return(nil)
+	service.Repository = repository
+
+	deleted, err := service.DeletePost("randomxid", 1)
+
+	assert.NotNil(deleted)
+	assert.Nil(err)
+
+	assert.Equal(deleted.DeletedAt.Valid, true)
+	assert.True(len(deleted.DeletedAt.String) > 0)
+}
+
+func Test_DeletePost_NotFound(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	repository.On("GetPost", mock.Anything).Return(nil, errors.New("Error"))
+	service.Repository = repository
+
+	deleted, err := service.DeletePost("randomxid", 1)
+
+	assert.Nil(deleted)
+	assert.NotNil(err)
+
+	assert.Equal(err.Error(), internalerrors.NotFound("Post").Error())
+}
+
+func Test_DeletePost_InternalError(t *testing.T) {
+	setup()
+
+	assert := assert.New(t)
+
+	repository := new(postmock.RepositoryMock)
+
+	errorMessage := "An Error ocourred"
+
+	repository.On("GetPost", mock.Anything).Return(&deletedPost, nil)
+	repository.On("DeletePost", mock.Anything, mock.Anything).Return(errors.New(errorMessage))
+	service.Repository = repository
+
+	deleted, err := service.DeletePost("randomxid", 1)
+
+	assert.Nil(deleted)
+	assert.NotNil(err)
+
+	assert.Equal(err.Error(), errorMessage)
 }

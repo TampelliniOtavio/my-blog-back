@@ -9,6 +9,15 @@ type NullString struct {
 	sql.NullString
 }
 
+func NewNullString(str string) NullString {
+	return NullString{
+		sql.NullString{
+			String: str,
+			Valid: len(str) > 0,
+		},
+	}
+}
+
 func (ns *NullString) MarshalJSON() ([]byte, error) {
 	if ns.Valid {
 		return json.Marshal(ns.String)
