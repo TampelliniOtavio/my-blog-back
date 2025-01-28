@@ -1,2 +1,5 @@
 tmp
 .env
+
+.vscode/*
+!.vscode/launch.json

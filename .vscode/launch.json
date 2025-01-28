@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug API (Linux)",
+            "type": "go",
+			"program": "${workspaceFolder}/cmd/api",
+            "request": "launch"
+        }
+    ]
+}
