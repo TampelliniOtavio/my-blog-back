@@ -4,22 +4,21 @@ import (
 	"os"
 	"time"
 
-	authcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/auth-contract"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/encrypt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type Service interface {
-	LoginUser(body *authcontract.PostLoginBody) (string, error)
-	CreateUser(body *authcontract.PostSigninBody) (*User, error)
+	LoginUser(body *PostLoginBody) (string, error)
+	CreateUser(body *PostSigninBody) (*User, error)
 }
 
 type ServiceImp struct {
 	Repository Repository
 }
 
-func (s *ServiceImp) LoginUser(body *authcontract.PostLoginBody) (string, error) {
+func (s *ServiceImp) LoginUser(body *PostLoginBody) (string, error) {
 	user, err := s.Repository.GetByUsername(body.Username)
 
 	if err != nil {
@@ -52,7 +51,7 @@ func (s *ServiceImp) LoginUser(body *authcontract.PostLoginBody) (string, error)
 	return t, nil
 }
 
-func (s *ServiceImp) CreateUser(body *authcontract.PostSigninBody) (*User, error) {
+func (s *ServiceImp) CreateUser(body *PostSigninBody) (*User, error) {
 	user, err := NewUser(body.Username, body.Email, body.Password)
 
 	if err != nil {

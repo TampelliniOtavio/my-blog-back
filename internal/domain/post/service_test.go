@@ -4,7 +4,6 @@ import (
 	"errors"
 	"testing"
 
-	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/databasetypes"
@@ -35,7 +34,7 @@ var (
 		UpdatedAt: formatter.CurrentTimestamp(),
 		DeletedAt: databasetypes.NewNullString(formatter.CurrentTimestamp()),
 	}
-	addPostBody = postcontract.PostAddPostBody{
+	addPostBody = post.AddPostBody{
 		Post: newPost.Post,
 	}
 )
@@ -50,7 +49,7 @@ func setup() {
 		CreatedAt: formatter.CurrentTimestamp(),
 		UpdatedAt: formatter.CurrentTimestamp(),
 	}
-	addPostBody = postcontract.PostAddPostBody{
+	addPostBody = post.AddPostBody{
 		Post: newPost.Post,
 	}
 }
@@ -127,7 +126,7 @@ func Test_AddPost_validate_post_required(t *testing.T) {
 	repository.On("AddPost", mock.Anything, mock.Anything).Return(&newPost, nil)
 	service.Repository = repository
 
-	addedPost, err := service.AddPost(&postcontract.PostAddPostBody{
+	addedPost, err := service.AddPost(&post.AddPostBody{
 		Post: "",
 	}, newPost.CreatedBy)
 

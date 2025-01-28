@@ -1,13 +1,13 @@
 package authendpoint
 
 import (
-	authcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/auth-contract"
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (h *Handler) postSignin (ctx *fiber.Ctx) error {
-    var signinBody authcontract.PostSigninBody
+    var signinBody auth.PostSigninBody
     err := ctx.BodyParser(&signinBody)
 
     if err != nil {

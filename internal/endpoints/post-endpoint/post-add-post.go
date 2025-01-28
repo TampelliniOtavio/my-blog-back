@@ -1,7 +1,7 @@
 package postendpoint
 
 import (
-	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,7 +12,7 @@ func (h *Handler) postAddPost(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	var body postcontract.PostAddPostBody
+	var body post.AddPostBody
 	err = ctx.BodyParser(&body)
 
 	if err != nil {

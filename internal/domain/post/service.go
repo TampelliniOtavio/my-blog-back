@@ -1,7 +1,6 @@
 package post
 
 import (
-	postcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/post-contract"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/gofiber/fiber/v2"
@@ -10,7 +9,7 @@ import (
 type Service interface {
 	ListAllPosts(limit int, offset int) (*[]Post, error)
 	GetPost(xid string) (*Post, error)
-	AddPost(body *postcontract.PostAddPostBody, createdBy int64) (*Post, error)
+	AddPost(body *AddPostBody, createdBy int64) (*Post, error)
 	AddLikeToPost(postXid string, userId int64) (*Post, error)
 	RemoveLikeFromPost(postXid string, userId int64) (*Post, error)
 	DeletePost(postXid string, userId int64) (*Post, error)
@@ -31,7 +30,7 @@ func (s *ServiceImp) ListAllPosts(limit int, offset int) (*[]Post, error) {
 	return s.Repository.GetAllPosts(limit, offset)
 }
 
-func (s *ServiceImp) AddPost(body *postcontract.PostAddPostBody, createdBy int64) (*Post, error) {
+func (s *ServiceImp) AddPost(body *AddPostBody, createdBy int64) (*Post, error) {
 	post, err := NewPost(body.Post, createdBy)
 
 	if err != nil {

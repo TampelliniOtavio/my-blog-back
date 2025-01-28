@@ -4,7 +4,6 @@ import (
 	"errors"
 	"testing"
 
-	authcontract "github.com/TampelliniOtavio/my-blog-back/internal/contract/auth-contract"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
 	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/authmock"
 	"github.com/stretchr/testify/assert"
@@ -13,11 +12,11 @@ import (
 
 var (
     service = auth.ServiceImp{}
-    loginBody = authcontract.PostLoginBody{
+    loginBody = auth.PostLoginBody{
         Username: "username",
         Password: "password",
     }
-    signinBody = authcontract.PostSigninBody{
+    signinBody = auth.PostSigninBody{
         Username: "username",
         Email: "email@email.com",
         Password: "password",
@@ -26,11 +25,11 @@ var (
 
 func setup() {
     service = auth.ServiceImp{}
-    loginBody = authcontract.PostLoginBody{
+    loginBody = auth.PostLoginBody{
         Username: "username",
         Password: "password",
     }
-    signinBody = authcontract.PostSigninBody{
+    signinBody = auth.PostSigninBody{
         Username: "username",
         Email: "email@email.com",
         Password: "password",
