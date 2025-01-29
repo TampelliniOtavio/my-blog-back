@@ -34,9 +34,10 @@ func (s *ServiceImp) LoginUser(body *PostLoginBody) (string, error) {
 		"IssuedAt":  jwt.NewNumericDate(time.Now()),
 		"NotBefore": jwt.NewNumericDate(time.Now()),
 		"data": &AuthClaims{
-			Xid:  user.Xid,
-			Id:   user.Id,
-			Name: user.Email,
+			Xid:      user.Xid,
+			Id:       user.Id,
+			Name:     user.Email,
+			Username: user.Username,
 		},
 	}
 

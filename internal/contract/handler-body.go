@@ -31,9 +31,10 @@ func (h *HandlerEssentials) GetUserFromContext(ctx *fiber.Ctx) (*auth.AuthClaims
 	}
 
 	authClaims := auth.AuthClaims{
-		Xid:  data["xid"].(string),
-		Id:   int64(data["id"].(float64)),
-		Name: data["name"].(string),
+		Xid:      data["xid"].(string),
+		Id:       int64(data["id"].(float64)),
+		Name:     data["name"].(string),
+		Username: data["username"].(string),
 	}
 
 	return &authClaims, nil
