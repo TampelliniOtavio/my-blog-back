@@ -20,7 +20,7 @@ func DefineRoutes(app *fiber.App, repo *database.Repository) {
 		Api: api,
 	}
 
-	authendpoint.DefineRoutes(repo.Auth, helper)
+	authendpoint.DefineRoutes(repo.User, helper)
 
 	postendpoint.DefineRoutes(repo.Post, helper)
 }

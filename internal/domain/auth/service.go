@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/encrypt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -11,11 +12,11 @@ import (
 
 type Service interface {
 	LoginUser(body *PostLoginBody) (string, error)
-	CreateUser(body *PostSigninBody) (*User, error)
+	CreateUser(body *PostSigninBody) (*user.User, error)
 }
 
 type ServiceImp struct {
-	Repository Repository
+	Repository user.Repository
 }
 
 func (s *ServiceImp) LoginUser(body *PostLoginBody) (string, error) {
@@ -52,8 +53,8 @@ func (s *ServiceImp) LoginUser(body *PostLoginBody) (string, error) {
 	return t, nil
 }
 
-func (s *ServiceImp) CreateUser(body *PostSigninBody) (*User, error) {
-	user, err := NewUser(body.Username, body.Email, body.Password)
+func (s *ServiceImp) CreateUser(body *PostSigninBody) (*user.User, error) {
+	user, err := user.NewUser(body.Username, body.Email, body.Password)
 
 	if err != nil {
 		return nil, err

@@ -3,14 +3,14 @@ package database_test
 import (
 	"testing"
 
-	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/util"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/stretchr/testify/assert"
 )
 
-func generateRandomPost(postSize int, user *auth.User) *post.Post {
+func generateRandomPost(postSize int, user *user.User) *post.Post {
 	post, _ := post.NewPost(util.RandomString(postSize), user.Id)
 	return post
 }

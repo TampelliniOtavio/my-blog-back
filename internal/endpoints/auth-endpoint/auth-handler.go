@@ -11,7 +11,7 @@ type Handler struct {
 	Helper  *contract.HandlerEssentials
 }
 
-func DefineRoutes(repository *database.AuthRepository, helper *contract.HandlerEssentials) {
+func DefineRoutes(repository *database.UserRepository, helper *contract.HandlerEssentials) {
 	handler := &Handler{
 		Service: &auth.ServiceImp{
 			Repository: repository,

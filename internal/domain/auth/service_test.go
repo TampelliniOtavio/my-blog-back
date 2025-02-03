@@ -5,7 +5,8 @@ import (
 	"testing"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
-	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/authmock"
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
+	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/usermock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -40,9 +41,9 @@ func Test_LoginUser_should_login (t *testing.T) {
     setup()
     assert := assert.New(t)
 
-    user, _ := auth.NewUser(loginBody.Username, "email@email.com", loginBody.Password)
+    user, _ := user.NewUser(loginBody.Username, "email@email.com", loginBody.Password)
 
-    repository := new(authmock.RepositoryMock)
+    repository := new(usermock.RepositoryMock)
 
     repository.On("GetByUsername", mock.Anything).Return(user, nil)
     service.Repository = repository
@@ -56,9 +57,9 @@ func Test_LoginUser_should_not_login_incorrect_password (t *testing.T) {
     setup()
     assert := assert.New(t)
 
-    user, _ := auth.NewUser(loginBody.Username, "email@email.com", "OtherPassword")
+    user, _ := user.NewUser(loginBody.Username, "email@email.com", "OtherPassword")
 
-    repository := new(authmock.RepositoryMock)
+    repository := new(usermock.RepositoryMock)
 
     repository.On("GetByUsername", mock.Anything).Return(user, nil)
     service.Repository = repository
@@ -72,7 +73,7 @@ func Test_LoginUser_should_not_login_user_not_found (t *testing.T) {
     setup()
     assert := assert.New(t)
 
-    repository := new(authmock.RepositoryMock)
+    repository := new(usermock.RepositoryMock)
 
     repository.On("GetByUsername", mock.Anything).Return(nil, errors.New("User Not Found"))
     service.Repository = repository
@@ -86,9 +87,9 @@ func Test_CreateUser_should_create(t *testing.T) {
     setup()
     assert := assert.New(t)
 
-    repository := new(authmock.RepositoryMock)
+    repository := new(usermock.RepositoryMock)
 
-    user, _ := auth.NewUser(signinBody.Username, signinBody.Email, signinBody.Password)
+    user, _ := user.NewUser(signinBody.Username, signinBody.Email, signinBody.Password)
 
     repository.On("CreateUser", mock.Anything).Return(user, nil)
     service.Repository = repository

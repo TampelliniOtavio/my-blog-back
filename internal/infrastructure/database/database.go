@@ -10,8 +10,8 @@ import (
 )
 
 type Repository struct {
-	Auth *AuthRepository
 	Post *PostRepository
+	User *UserRepository
 }
 
 func newDB() *sqlx.DB {
@@ -32,8 +32,8 @@ func newDB() *sqlx.DB {
 
 func NewRawRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Auth: NewAuthRepository(db),
 		Post: NewPostRepository(db),
+		User: NewUserRepository(db),
 	}
 }
 
