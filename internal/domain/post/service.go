@@ -72,7 +72,7 @@ func (s *ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) 
 		return nil, err
 	}
 
-	post.LikeCount += 1
+	post, _ = s.GetPost(postXid, userId)
 
 	return post, nil
 }
@@ -90,7 +90,7 @@ func (s *ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, er
 		return nil, err
 	}
 
-	post.LikeCount -= 1
+	post, _ = s.GetPost(postXid, userId)
 
 	return post, nil
 }
