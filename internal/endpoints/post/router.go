@@ -7,7 +7,7 @@ func (h *Handler) DefineRoutes() {
 	router.Get("/", h.getAllPosts).Name("list")
 	router.Get("/:xid", h.getPost).Name("query")
 
-	router.Use(middleware.Protected())
+	router.Use(middleware.Protected(&middleware.ProtectedParams{}))
 	router.Post("/", h.postAddPost).Name("add")
 	router.Delete("/:xid", h.deletePost).Name("delete")
 	router.Post("/:xid/like", h.postAddLikeToPost).Name("like")

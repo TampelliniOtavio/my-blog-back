@@ -8,12 +8,25 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Protected() fiber.Handler {
+type ProtectedParams struct {
+	Optional bool
+}
+
+func Protected(params *ProtectedParams) fiber.Handler {
 	return jwtware.New(
 		jwtware.Config{
 			ErrorHandler: jwtError,
 			SigningKey: jwtware.SigningKey{
 				Key: []byte(os.Getenv("JWT_SECRET")),
+			},
+			Filter: func(c *fiber.Ctx) bool {
+				if !params.Optional {
+					return false
+				}
+
+				authHeader := string(c.Request().Header.Peek("Authorization"))
+
+				return len(authHeader) == 0
 			},
 		},
 	)

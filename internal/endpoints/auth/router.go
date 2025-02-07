@@ -7,6 +7,6 @@ func (h *Handler) DefineRoutes() {
 	router.Post("/login", h.postLogin).Name("login")
 	router.Post("/signin", h.postSignin).Name("signin")
 
-	router.Use(middleware.Protected())
+	router.Use(middleware.Protected(&middleware.ProtectedParams{}))
 	router.Get("/", h.getMyAccount).Name("my-account")
 }
