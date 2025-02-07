@@ -15,6 +15,7 @@ type Post struct {
 	LikeCount     int64                    `db:"like_count" json:"likeCount"`
 	CreatedAt     string                   `validate:"required,datetime" db:"created_at" json:"createdAt"`
 	UpdatedAt     string                   `validate:"required,datetime" db:"updated_at" json:"updatedAt"`
+	IsLikedByUser bool                     `db:"is_liked_by_user" json:"isLikedByUser"`
 	DeletedAt     databasetypes.NullString `db:"deleted_at" json:"deletedAt"`
 }
 
@@ -29,12 +30,13 @@ func NewPost(post string, createdBy int64) (*Post, error) {
 	now := formatter.CurrentTimestamp()
 
 	newPost := Post{
-		Xid:       xid.New().String(),
-		Post:      post,
-		CreatedBy: createdBy,
-		LikeCount: 0,
-		CreatedAt: now,
-		UpdatedAt: now,
+		Xid:           xid.New().String(),
+		Post:          post,
+		CreatedBy:     createdBy,
+		LikeCount:     0,
+		IsLikedByUser: false,
+		CreatedAt:     now,
+		UpdatedAt:     now,
 	}
 
 	err := internalerrors.ValidateStruct(newPost)

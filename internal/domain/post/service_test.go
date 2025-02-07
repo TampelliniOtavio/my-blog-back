@@ -60,10 +60,10 @@ func Test_GetAllPosts_should_return(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetAllPosts", mock.Anything, mock.Anything).Return(&posts, nil)
+	repository.On("GetAllPosts", mock.Anything, mock.Anything, mock.Anything).Return(&posts, nil)
 	service.Repository = repository
 
-	post, err := service.ListAllPosts(0, 1)
+	post, err := service.ListAllPosts(0, 1, 0)
 
 	assert.Nil(err)
 	assert.NotNil(post)
@@ -75,10 +75,10 @@ func Test_GetAllPosts_should_validate_limit(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetAllPosts", mock.Anything, mock.Anything).Return(&posts, nil)
+	repository.On("GetAllPosts", mock.Anything, mock.Anything, mock.Anything).Return(&posts, nil)
 	service.Repository = repository
 
-	_, err := service.ListAllPosts(-1, 1)
+	_, err := service.ListAllPosts(-1, 1, 0)
 
 	assert.NotNil(err)
 	assert.Equal(err.Error(), "Limit is not valid")
@@ -90,10 +90,10 @@ func Test_GetAllPosts_should_validate_offset(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetAllPosts", mock.Anything, mock.Anything).Return(&posts, nil)
+	repository.On("GetAllPosts", mock.Anything, mock.Anything, mock.Anything).Return(&posts, nil)
 	service.Repository = repository
 
-	_, err := service.ListAllPosts(1, -1)
+	_, err := service.ListAllPosts(1, -1, 0)
 
 	assert.NotNil(err)
 	assert.Equal(err.Error(), "Offset is not valid")
@@ -106,7 +106,7 @@ func Test_AddPost_should_insert(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("AddPost", mock.Anything, mock.Anything).Return(&newPost, nil)
+	repository.On("AddPost", mock.Anything, mock.Anything, mock.Anything).Return(&newPost, nil)
 	service.Repository = repository
 
 	addedPost, err := service.AddPost(&addPostBody, newPost.CreatedBy)
@@ -123,7 +123,7 @@ func Test_AddPost_validate_post_required(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("AddPost", mock.Anything, mock.Anything).Return(&newPost, nil)
+	repository.On("AddPost", mock.Anything, mock.Anything, mock.Anything).Return(&newPost, nil)
 	service.Repository = repository
 
 	addedPost, err := service.AddPost(&post.AddPostBody{
@@ -142,10 +142,10 @@ func Test_GetPost_ShouldReturn(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(&newPost, nil)
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(&newPost, nil)
 	service.Repository = repository
 
-	currPost, err := service.GetPost(newPost.Xid)
+	currPost, err := service.GetPost(newPost.Xid, 0)
 
 	assert.Nil(err)
 	assert.NotNil(currPost)
@@ -159,10 +159,10 @@ func Test_GetPost_ShouldNotFind(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(nil, sql.ErrNoRows)
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(nil, sql.ErrNoRows)
 	service.Repository = repository
 
-	currPost, err := service.GetPost("xid-not-valid")
+	currPost, err := service.GetPost("xid-not-valid", 0)
 
 	assert.Nil(currPost)
 	assert.NotNil(err)
@@ -178,10 +178,10 @@ func Test_GetPost_ShouldReturnGenericError(t *testing.T) {
 
 	errorMessage := "Any Error"
 
-	repository.On("GetPost", mock.Anything).Return(nil, errors.New(errorMessage))
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(nil, errors.New(errorMessage))
 	service.Repository = repository
 
-	currPost, err := service.GetPost(newPost.Xid)
+	currPost, err := service.GetPost(newPost.Xid, 0)
 
 	assert.Nil(currPost)
 	assert.NotNil(err)
@@ -195,7 +195,7 @@ func Test_AddLikeToPost_Added(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(&newPost, nil)
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(&newPost, nil)
 	repository.On("AddLikeToPost", mock.Anything, mock.Anything).Return(nil)
 	service.Repository = repository
 
@@ -214,7 +214,7 @@ func Test_AddLikeToPost_PostNotFound(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(nil, errors.New("Not Found"))
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(nil, errors.New("Not Found"))
 	service.Repository = repository
 
 	updatedPost, err := service.AddLikeToPost("randomxid", 1)
@@ -232,7 +232,7 @@ func Test_RemoveLikeFromPost_Removed(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(&newPost, nil)
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(&newPost, nil)
 	repository.On("RemoveLikeFromPost", mock.Anything, mock.Anything).Return(nil)
 	service.Repository = repository
 
@@ -251,7 +251,7 @@ func Test_RemoveLikeToPost_PostNotFound(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(nil, errors.New("Not Found"))
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(nil, errors.New("Not Found"))
 	service.Repository = repository
 
 	updatedPost, err := service.RemoveLikeFromPost("randomxid", 1)
@@ -269,7 +269,7 @@ func Test_DeletePost_Deleted(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(&deletedPost, nil)
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(&deletedPost, nil)
 	repository.On("DeletePost", mock.Anything, mock.Anything).Return(nil)
 	service.Repository = repository
 
@@ -289,7 +289,7 @@ func Test_DeletePost_NotFound(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(nil, errors.New("Error"))
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(nil, errors.New("Error"))
 	service.Repository = repository
 
 	deleted, err := service.DeletePost("randomxid", 1)
@@ -309,7 +309,7 @@ func Test_DeletePost_InternalError(t *testing.T) {
 
 	errorMessage := "An Error ocourred"
 
-	repository.On("GetPost", mock.Anything).Return(&deletedPost, nil)
+	repository.On("GetPost", mock.Anything, mock.Anything).Return(&deletedPost, nil)
 	repository.On("DeletePost", mock.Anything, mock.Anything).Return(errors.New(errorMessage))
 	service.Repository = repository
 

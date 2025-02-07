@@ -67,7 +67,7 @@ func Test_GetAllPosts_List(t *testing.T) {
 		assert.Nil(err)
 	}
 
-	users, err := repo.Post.GetAllPosts(quantity/2, quantity/2)
+	users, err := repo.Post.GetAllPosts(quantity/2, quantity/2, 0)
 
 	assert.NotNil(users)
 	assert.Nil(err)
@@ -83,13 +83,14 @@ func Test_AddLikeToPost_AddLike(t *testing.T) {
 	post, _ := createPost(generateRandomPost(1, user))
 
 	err := repo.Post.AddLikeToPost(post, user.Id)
-	likedPost, _ := repo.Post.GetPost(post.Xid)
+	likedPost, _ := repo.Post.GetPost(post.Xid, user.Id)
 
 	assert.NotNil(likedPost)
 	assert.Nil(err)
 
 	assert.Equal(post.Xid, likedPost.Xid)
 	assert.Equal(post.LikeCount+1, likedPost.LikeCount)
+	assert.True(likedPost.IsLikedByUser)
 }
 
 func Test_AddLikeToPost_AddLikeMultipleNotIncrease(t *testing.T) {
@@ -116,18 +117,20 @@ func Test_RemoveLikeFromPost(t *testing.T) {
 	post, _ := createPost(generateRandomPost(1, user))
 
 	repo.Post.AddLikeToPost(post, user.Id)
-	likedPost, _ := repo.Post.GetPost(post.Xid)
+	likedPost, _ := repo.Post.GetPost(post.Xid, user.Id)
 
 	assert.Equal(post.Xid, likedPost.Xid)
 	assert.Equal(post.LikeCount+1, likedPost.LikeCount)
+	assert.True(likedPost.IsLikedByUser)
 
 	err := repo.Post.RemoveLikeFromPost(post, user.Id)
 	assert.Nil(err)
 
-	dislikedPost, _ := repo.Post.GetPost(post.Xid)
+	dislikedPost, _ := repo.Post.GetPost(post.Xid, user.Id)
 
 	assert.Equal(post.Xid, dislikedPost.Xid)
 	assert.Equal(post.LikeCount, dislikedPost.LikeCount)
+	assert.False(dislikedPost.IsLikedByUser)
 }
 
 func Test_RemoveLikeFromPost_RemoveLikeNotDecrease(t *testing.T) {
@@ -149,7 +152,7 @@ func Test_GetPost_Valid(t *testing.T) {
 
 	post, _ := createPost(generateRandomPost(1, user))
 
-	selectedPost, err := repo.Post.GetPost(post.Xid)
+	selectedPost, err := repo.Post.GetPost(post.Xid, 0)
 
 	assert.NotNil(selectedPost)
 	assert.Nil(err)
@@ -169,7 +172,7 @@ func Test_GetPost_NotFound(t *testing.T) {
 
 	post := generateRandomPost(1, user) // Not Created
 
-	selectedPost, err := repo.Post.GetPost(post.Xid)
+	selectedPost, err := repo.Post.GetPost(post.Xid, 0)
 
 	assert.Nil(selectedPost)
 	assert.NotNil(err)
@@ -187,7 +190,7 @@ func Test_DeletePost_Deleted(t *testing.T) {
 	err := repo.Post.DeletePost(post, user.Id)
 	assert.Nil(err)
 
-	deletedPost, err := repo.Post.GetPost(post.Xid)
+	deletedPost, err := repo.Post.GetPost(post.Xid, 0)
 
 	assert.NotNil(deletedPost)
 	assert.NotZero(len(deletedPost.DeletedAt.String))

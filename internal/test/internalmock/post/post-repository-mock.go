@@ -9,8 +9,8 @@ type RepositoryMock struct {
 	mock.Mock
 }
 
-func (c *RepositoryMock) GetAllPosts(limit int, offset int) (*[]post.Post, error) {
-	args := c.Called(limit, offset)
+func (c *RepositoryMock) GetAllPosts(limit int, offset int, authUserId int64) (*[]post.Post, error) {
+	args := c.Called(limit, offset, authUserId)
 
 	first := args.Get(0)
 	err := args.Error(1)
@@ -35,8 +35,8 @@ func (c *RepositoryMock) AddPost(newPost *post.Post) (*post.Post, error) {
 	return first.(*post.Post), err
 }
 
-func (c *RepositoryMock) GetPost(xid string) (*post.Post, error) {
-	args := c.Called(xid)
+func (c *RepositoryMock) GetPost(xid string, authUserId int64) (*post.Post, error) {
+	args := c.Called(xid, authUserId)
 
 	first := args.Get(0)
 	err := args.Error(1)

@@ -17,7 +17,7 @@ func NewPostRepository(db *sqlx.DB) *PostRepository {
 	return &PostRepository{db}
 }
 
-func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error) {
+func (r *PostRepository) GetAllPosts(limit int, offset int, authUserId int64) (*[]post.Post, error) {
 	var posts []post.Post
 	err := r.db.Select(
 		&posts,
@@ -29,6 +29,23 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 			posts.like_count,
 			posts.deleted_at,
 			users.id as created_by,
+			CASE
+				WHEN
+					COALESCE(
+						(SELECT
+							COUNT(*)
+						FROM
+							my_blog.likes_post AS likes
+						WHERE
+							likes.post_xid = posts.xid
+							AND likes.user_id = $3
+						)
+						, 0
+					) > 0
+				THEN true
+			ELSE
+				false
+			END AS is_liked_by_user,
 			users.username
 		FROM my_blog.posts AS posts
 		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
@@ -36,6 +53,7 @@ func (r *PostRepository) GetAllPosts(limit int, offset int) (*[]post.Post, error
 		LIMIT $1 OFFSET $2`,
 		limit,
 		offset,
+		authUserId,
 	)
 
 	if err != nil {
@@ -82,7 +100,7 @@ func (r *PostRepository) AddPost(insertPost *post.Post) (*post.Post, error) {
 	return &newPost, nil
 }
 
-func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
+func (r *PostRepository) GetPost(xid string, authUserId int64) (*post.Post, error) {
 	var post post.Post
 
 	err := r.db.QueryRowx(
@@ -94,11 +112,29 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 			posts.like_count,
 			posts.deleted_at,
 			users.id as created_by,
+			CASE
+				WHEN
+					COALESCE(
+						(SELECT
+							COUNT(*)
+						FROM
+							my_blog.likes_post AS likes
+						WHERE
+							likes.post_xid = posts.xid
+							and likes.user_id = $2
+						)
+						, 0
+					) > 0
+				THEN true
+			ELSE
+				false
+			END AS is_liked_by_user,
 			users.username
 		FROM my_blog.posts AS posts
 		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
 		WHERE posts.xid = $1`,
 		xid,
+		authUserId,
 	).StructScan(&post)
 
 	if err != nil {
