@@ -5,7 +5,7 @@ import (
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/util"
 	"github.com/stretchr/testify/assert"
 )
@@ -106,7 +106,7 @@ func Test_AddLikeToPost_AddLikeMultipleNotIncrease(t *testing.T) {
 
 	assert.NotNil(err)
 
-	assert.Equal(err.Error(), internalerrors.BadRequest("User Already Liked the post").Error())
+	assert.Equal(err.Error(), internalerror.BadRequest("User Already Liked the post").Error())
 }
 
 func Test_RemoveLikeFromPost(t *testing.T) {
@@ -142,7 +142,7 @@ func Test_RemoveLikeFromPost_RemoveLikeNotDecrease(t *testing.T) {
 
 	err := repo.Post.RemoveLikeFromPost(post, user.Id)
 	assert.NotNil(err)
-	assert.Equal(err.Error(), internalerrors.NotFound("Liked Post").Error())
+	assert.Equal(err.Error(), internalerror.NotFound("Liked Post").Error())
 }
 
 func Test_GetPost_Valid(t *testing.T) {
@@ -177,7 +177,7 @@ func Test_GetPost_NotFound(t *testing.T) {
 	assert.Nil(selectedPost)
 	assert.NotNil(err)
 
-	assert.Equal(err.Error(), internalerrors.NotFound("Post").Error())
+	assert.Equal(err.Error(), internalerror.NotFound("Post").Error())
 }
 
 func Test_DeletePost_Deleted(t *testing.T) {
@@ -209,5 +209,5 @@ func Test_DeletePost_NotFound(t *testing.T) {
 	err = repo.Post.DeletePost(post, user.Id)
 	assert.NotNil(err)
 
-	assert.Equal(err.Error(), internalerrors.NotFound("Post").Error())
+	assert.Equal(err.Error(), internalerror.NotFound("Post").Error())
 }

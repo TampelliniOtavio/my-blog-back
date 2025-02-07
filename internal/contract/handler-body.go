@@ -2,7 +2,7 @@ package contract
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -15,19 +15,19 @@ func (h *HandlerEssentials) GetUserFromContext(ctx *fiber.Ctx) (*auth.AuthClaims
 	user, ok := ctx.Locals("user").(*jwt.Token)
 
 	if !ok {
-		return nil, internalerrors.NotAuthorizedError
+		return nil, internalerror.NotAuthorizedError
 	}
 
 	claims, ok := user.Claims.(jwt.MapClaims)
 
 	if !ok {
-		return nil, internalerrors.NotAuthorizedError
+		return nil, internalerror.NotAuthorizedError
 	}
 
 	data, ok := claims["data"].(map[string]interface{})
 
 	if !ok {
-		return nil, internalerrors.NotAuthorizedError
+		return nil, internalerror.NotAuthorizedError
 	}
 
 	authClaims := auth.AuthClaims{

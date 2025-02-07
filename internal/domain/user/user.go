@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/encrypt"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/rs/xid"
 )
 
@@ -29,7 +29,7 @@ func NewUser(username string, email string, password string) (*User, error) {
 		Password: password,
 	}
 
-	err = internalerrors.ValidateStruct(user)
+	err = internalerror.ValidateStruct(user)
 
 	if err != nil {
 		return nil, err

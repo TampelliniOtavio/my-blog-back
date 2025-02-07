@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
-	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/database-error"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -139,7 +139,7 @@ func (r *PostRepository) GetPost(xid string, authUserId int64) (*post.Post, erro
 
 	if err != nil {
 		if databaseerror.IsNotFound(err) {
-			return nil, internalerrors.NotFound("Post")
+			return nil, internalerror.NotFound("Post")
 		}
 
 		return nil, err
@@ -173,7 +173,7 @@ func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
 		`, post.Xid)
 
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
-			return internalerrors.NotFound("Liked Post")
+			return internalerror.NotFound("Liked Post")
 		}
 
 		return err
@@ -191,7 +191,7 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 		`, userId, post.Xid)
 
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
-			return internalerrors.NotFound("Liked Post")
+			return internalerror.NotFound("Liked Post")
 		}
 
 		exec, err = tx.Exec(`
@@ -205,7 +205,7 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 		`, post.Xid)
 
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
-			return internalerrors.NotFound("Liked Post")
+			return internalerror.NotFound("Liked Post")
 		}
 
 		return err
@@ -230,7 +230,7 @@ func (r *PostRepository) DeletePost(post *post.Post, userId int64) error {
 	rows, err := result.RowsAffected()
 
 	if rows == 0 {
-		return internalerrors.NotFound("Post")
+		return internalerror.NotFound("Post")
 	}
 
 	return r.handleError(err)
@@ -242,11 +242,11 @@ func (p *PostRepository) handleError(err error) error {
 	}
 
 	if strings.Index(err.Error(), "violates foreign key constraint \"posts_users_fk\"") > -1 {
-		return internalerrors.NotFound("User")
+		return internalerror.NotFound("User")
 	}
 
 	if strings.Index(err.Error(), "violates unique constraint \"likes_post_one_user_per_post\"") > -1 {
-		return internalerrors.BadRequest("User Already Liked the post")
+		return internalerror.BadRequest("User Already Liked the post")
 	}
 
 	return err

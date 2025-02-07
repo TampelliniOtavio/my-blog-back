@@ -1,8 +1,8 @@
 package post
 
 import (
-	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/database-error"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -49,7 +49,7 @@ func (s *ServiceImp) GetPost(xid string, authUserId int64) (*Post, error) {
 	}
 
 	if databaseerror.IsNotFound(err) {
-		return nil, internalerrors.NotFound("Post")
+		return nil, internalerror.NotFound("Post")
 	}
 
 	return nil, err
@@ -59,7 +59,7 @@ func (s *ServiceImp) AddLikeToPost(postXid string, userId int64) (*Post, error) 
 	post, err := s.GetPost(postXid, userId)
 
 	if err != nil {
-		return nil, internalerrors.NotFound("Post")
+		return nil, internalerror.NotFound("Post")
 	}
 
 	err = s.Repository.AddLikeToPost(post, userId)
@@ -81,7 +81,7 @@ func (s *ServiceImp) RemoveLikeFromPost(postXid string, userId int64) (*Post, er
 	post, err := s.GetPost(postXid, userId)
 
 	if err != nil {
-		return nil, internalerrors.NotFound("Post")
+		return nil, internalerror.NotFound("Post")
 	}
 
 	err = s.Repository.RemoveLikeFromPost(post, userId)
@@ -99,7 +99,7 @@ func (s *ServiceImp) DeletePost(postXid string, userId int64) (*Post, error) {
 	post, err := s.GetPost(postXid, userId)
 
 	if err != nil {
-		return nil, internalerrors.NotFound("Post")
+		return nil, internalerror.NotFound("Post")
 	}
 
 	err = s.Repository.DeletePost(post, userId)

@@ -2,7 +2,7 @@ package post
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database/types"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
 	"github.com/rs/xid"
 )
@@ -39,7 +39,7 @@ func NewPost(post string, createdBy int64) (*Post, error) {
 		UpdatedAt:     now,
 	}
 
-	err := internalerrors.ValidateStruct(newPost)
+	err := internalerror.ValidateStruct(newPost)
 
 	if err != nil {
 		return nil, err

@@ -7,7 +7,7 @@ import (
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database/types"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
 	postmock "github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/post"
 	"github.com/stretchr/testify/assert"
@@ -297,7 +297,7 @@ func Test_DeletePost_NotFound(t *testing.T) {
 	assert.Nil(deleted)
 	assert.NotNil(err)
 
-	assert.Equal(err.Error(), internalerrors.NotFound("Post").Error())
+	assert.Equal(err.Error(), internalerror.NotFound("Post").Error())
 }
 
 func Test_DeletePost_InternalError(t *testing.T) {

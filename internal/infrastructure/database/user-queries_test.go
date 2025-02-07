@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/util"
 	"github.com/stretchr/testify/assert"
 )
@@ -94,5 +94,5 @@ func Test_GetByUsername_UserNotFound(t *testing.T) {
 
 	assert.Nil(selectedUser)
 	assert.NotNil(err)
-	assert.Equal(err.Error(), internalerrors.NotFound("User").Error())
+	assert.Equal(err.Error(), internalerror.NotFound("User").Error())
 }

@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
-	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/database-error"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 )
@@ -52,7 +52,7 @@ func (r *UserRepository) handleError(err error) error {
 	}
 
 	if databaseerror.IsNotFound(err) {
-		return internalerrors.NotFound("User")
+		return internalerror.NotFound("User")
 	}
 
 	return err

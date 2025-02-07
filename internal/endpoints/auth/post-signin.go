@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
+	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +14,7 @@ func (h *Handler) postSignin(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = internalerrors.ValidateStruct(signinBody)
+	err = internalerror.ValidateStruct(signinBody)
 
 	if err != nil {
 		return err

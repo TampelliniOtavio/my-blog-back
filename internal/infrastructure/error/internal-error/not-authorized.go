@@ -1,4 +1,4 @@
-package internalerrors
+package internalerror
 
 import "github.com/gofiber/fiber/v2"
 

@@ -1,4 +1,4 @@
-package internalerrors
+package internalerror
 
 import (
 	"strings"
