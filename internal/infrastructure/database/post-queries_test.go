@@ -5,8 +5,8 @@ import (
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/util"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	"github.com/stretchr/testify/assert"
 )
 

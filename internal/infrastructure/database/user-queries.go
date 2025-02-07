@@ -5,7 +5,7 @@ import (
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 )

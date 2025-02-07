@@ -7,8 +7,8 @@ import (
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database/types"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	postmock "github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/post"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

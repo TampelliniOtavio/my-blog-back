@@ -2,7 +2,7 @@ package contract
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )

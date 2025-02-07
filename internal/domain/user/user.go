@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/encrypt"
-	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
+	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/errors/internal-errors"
 	"github.com/rs/xid"
 )
 
