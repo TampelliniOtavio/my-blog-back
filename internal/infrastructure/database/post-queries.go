@@ -135,7 +135,7 @@ func (r *PostRepository) AddLikeToPost(post *post.Post, userId int64) error {
 			xid = $1 AND
 			deleted_at IS NULL
 		`, post.Xid)
-	
+
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
 			return internalerrors.NotFound("Liked Post")
 		}
@@ -157,7 +157,7 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
 			return internalerrors.NotFound("Liked Post")
 		}
-	
+
 		exec, err = tx.Exec(`
 		UPDATE
 			my_blog.posts
@@ -167,7 +167,7 @@ func (r *PostRepository) RemoveLikeFromPost(post *post.Post, userId int64) error
 			xid = $1 AND
 			deleted_at IS NULL
 		`, post.Xid)
-	
+
 		if rows, err := exec.RowsAffected(); rows == 0 || err != nil {
 			return internalerrors.NotFound("Liked Post")
 		}

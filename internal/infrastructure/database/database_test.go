@@ -31,7 +31,6 @@ func TestMain(m *testing.M) {
 	password := os.Getenv("SQL_PASSWORD_TEST")
 	db_name := os.Getenv("SQL_DATABASE_TEST")
 
-
 	connStr := "postgres://" + username + ":" + password + "@" + host + "/" + db_name + "?sslmode=disable"
 	db, err := sqlx.Connect("postgres", connStr)
 

@@ -6,25 +6,25 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h *Handler) postSignin (ctx *fiber.Ctx) error {
-    var signinBody auth.PostSigninBody
-    err := ctx.BodyParser(&signinBody)
+func (h *Handler) postSignin(ctx *fiber.Ctx) error {
+	var signinBody auth.PostSigninBody
+	err := ctx.BodyParser(&signinBody)
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    err = internalerrors.ValidateStruct(signinBody)
+	err = internalerrors.ValidateStruct(signinBody)
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    user, err := h.Service.CreateUser(&signinBody)
+	user, err := h.Service.CreateUser(&signinBody)
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    return ctx.Status(200).JSON(fiber.Map{"message": "User created successfully", "user": user})
+	return ctx.Status(200).JSON(fiber.Map{"message": "User created successfully", "user": user})
 }

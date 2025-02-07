@@ -13,7 +13,7 @@ func NewNullString(str string) NullString {
 	return NullString{
 		sql.NullString{
 			String: str,
-			Valid: len(str) > 0,
+			Valid:  len(str) > 0,
 		},
 	}
 }

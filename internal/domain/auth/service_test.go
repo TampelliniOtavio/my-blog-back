@@ -12,95 +12,95 @@ import (
 )
 
 var (
-    service = auth.ServiceImp{}
-    loginBody = auth.PostLoginBody{
-        Username: "username",
-        Password: "password",
-    }
-    signinBody = auth.PostSigninBody{
-        Username: "username",
-        Email: "email@email.com",
-        Password: "password",
-    }
+	service   = auth.ServiceImp{}
+	loginBody = auth.PostLoginBody{
+		Username: "username",
+		Password: "password",
+	}
+	signinBody = auth.PostSigninBody{
+		Username: "username",
+		Email:    "email@email.com",
+		Password: "password",
+	}
 )
 
 func setup() {
-    service = auth.ServiceImp{}
-    loginBody = auth.PostLoginBody{
-        Username: "username",
-        Password: "password",
-    }
-    signinBody = auth.PostSigninBody{
-        Username: "username",
-        Email: "email@email.com",
-        Password: "password",
-    }
+	service = auth.ServiceImp{}
+	loginBody = auth.PostLoginBody{
+		Username: "username",
+		Password: "password",
+	}
+	signinBody = auth.PostSigninBody{
+		Username: "username",
+		Email:    "email@email.com",
+		Password: "password",
+	}
 }
 
-func Test_LoginUser_should_login (t *testing.T) {
-    setup()
-    assert := assert.New(t)
+func Test_LoginUser_should_login(t *testing.T) {
+	setup()
+	assert := assert.New(t)
 
-    user, _ := user.NewUser(loginBody.Username, "email@email.com", loginBody.Password)
+	user, _ := user.NewUser(loginBody.Username, "email@email.com", loginBody.Password)
 
-    repository := new(usermock.RepositoryMock)
+	repository := new(usermock.RepositoryMock)
 
-    repository.On("GetByUsername", mock.Anything).Return(user, nil)
-    service.Repository = repository
+	repository.On("GetByUsername", mock.Anything).Return(user, nil)
+	service.Repository = repository
 
-    _, err := service.LoginUser(&loginBody)
+	_, err := service.LoginUser(&loginBody)
 
-    assert.Nil(err)
+	assert.Nil(err)
 }
 
-func Test_LoginUser_should_not_login_incorrect_password (t *testing.T) {
-    setup()
-    assert := assert.New(t)
+func Test_LoginUser_should_not_login_incorrect_password(t *testing.T) {
+	setup()
+	assert := assert.New(t)
 
-    user, _ := user.NewUser(loginBody.Username, "email@email.com", "OtherPassword")
+	user, _ := user.NewUser(loginBody.Username, "email@email.com", "OtherPassword")
 
-    repository := new(usermock.RepositoryMock)
+	repository := new(usermock.RepositoryMock)
 
-    repository.On("GetByUsername", mock.Anything).Return(user, nil)
-    service.Repository = repository
+	repository.On("GetByUsername", mock.Anything).Return(user, nil)
+	service.Repository = repository
 
-    _, err := service.LoginUser(&loginBody)
+	_, err := service.LoginUser(&loginBody)
 
-    assert.NotNil(err)
+	assert.NotNil(err)
 }
 
-func Test_LoginUser_should_not_login_user_not_found (t *testing.T) {
-    setup()
-    assert := assert.New(t)
+func Test_LoginUser_should_not_login_user_not_found(t *testing.T) {
+	setup()
+	assert := assert.New(t)
 
-    repository := new(usermock.RepositoryMock)
+	repository := new(usermock.RepositoryMock)
 
-    repository.On("GetByUsername", mock.Anything).Return(nil, errors.New("User Not Found"))
-    service.Repository = repository
+	repository.On("GetByUsername", mock.Anything).Return(nil, errors.New("User Not Found"))
+	service.Repository = repository
 
-    _, err := service.LoginUser(&loginBody)
+	_, err := service.LoginUser(&loginBody)
 
-    assert.NotNil(err)
+	assert.NotNil(err)
 }
 
 func Test_CreateUser_should_create(t *testing.T) {
-    setup()
-    assert := assert.New(t)
+	setup()
+	assert := assert.New(t)
 
-    repository := new(usermock.RepositoryMock)
+	repository := new(usermock.RepositoryMock)
 
-    user, _ := user.NewUser(signinBody.Username, signinBody.Email, signinBody.Password)
+	user, _ := user.NewUser(signinBody.Username, signinBody.Email, signinBody.Password)
 
-    repository.On("CreateUser", mock.Anything).Return(user, nil)
-    service.Repository = repository
+	repository.On("CreateUser", mock.Anything).Return(user, nil)
+	service.Repository = repository
 
-    user, err := service.CreateUser(&signinBody)
+	user, err := service.CreateUser(&signinBody)
 
-    assert.Nil(err)
-    assert.NotNil(user)
-    assert.NotNil(user.Id)
-    assert.NotNil(user.Xid)
-    assert.Equal(user.Username, signinBody.Username)
-    assert.Equal(user.Email, signinBody.Email)
-    assert.NotEqual(user.Password, signinBody.Password, "Password Should be Encrypted")
+	assert.Nil(err)
+	assert.NotNil(user)
+	assert.NotNil(user.Id)
+	assert.NotNil(user.Xid)
+	assert.Equal(user.Username, signinBody.Username)
+	assert.Equal(user.Email, signinBody.Email)
+	assert.NotEqual(user.Password, signinBody.Password, "Password Should be Encrypted")
 }
