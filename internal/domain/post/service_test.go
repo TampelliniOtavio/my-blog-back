@@ -9,7 +9,7 @@ import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/databasetypes"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
-	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/postmock"
+	postmock "github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/post"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

@@ -6,7 +6,7 @@ import (
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
-	"github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/usermock"
+	usermock "github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/user"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

@@ -1,4 +1,4 @@
-package usermock
+package user
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
