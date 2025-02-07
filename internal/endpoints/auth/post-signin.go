@@ -1,4 +1,4 @@
-package authendpoint
+package auth
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/auth"

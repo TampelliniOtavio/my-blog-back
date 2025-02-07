@@ -1,4 +1,4 @@
-package postendpoint
+package post
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"

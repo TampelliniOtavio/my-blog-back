@@ -1,4 +1,4 @@
-package postendpoint
+package post
 
 import "github.com/gofiber/fiber/v2"
 

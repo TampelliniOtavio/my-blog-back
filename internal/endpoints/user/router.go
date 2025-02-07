@@ -1,4 +1,4 @@
-package userendpoint
+package user
 
 func (h *Handler) DefineRoutes() {
 	router := h.Helper.Api.Group("/users").Name("users.")

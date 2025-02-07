@@ -1,19 +1,19 @@
-package postendpoint
+package user
 
 import (
 	"github.com/TampelliniOtavio/my-blog-back/internal/contract"
-	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database"
 )
 
 type Handler struct {
-	Service post.Service
+	Service user.Service
 	Helper  *contract.HandlerEssentials
 }
 
-func DefineRoutes(repository *database.PostRepository, helper *contract.HandlerEssentials) {
+func DefineRoutes(repository *database.UserRepository, helper *contract.HandlerEssentials) {
 	handler := Handler{
-		Service: &post.ServiceImp{
+		Service: &user.ServiceImp{
 			Repository: repository,
 		},
 		Helper: helper,
