@@ -102,7 +102,7 @@ func (r *PostRepository) GetPost(xid string) (*post.Post, error) {
 	).StructScan(&post)
 
 	if err != nil {
-		if err.Error() == databaseerror.NOT_FOUND {
+		if databaseerror.IsNotFound(err) {
 			return nil, internalerrors.NotFound("Post")
 		}
 

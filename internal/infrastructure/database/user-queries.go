@@ -51,7 +51,7 @@ func (r *UserRepository) handleError(err error) error {
 		return fiber.NewError(400, "Email already exists")
 	}
 
-	if err.Error() == databaseerror.NOT_FOUND {
+	if databaseerror.IsNotFound(err) {
 		return internalerrors.NotFound("User")
 	}
 

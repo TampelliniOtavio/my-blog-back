@@ -47,7 +47,7 @@ func (s *ServiceImp) GetPost(xid string) (*Post, error) {
 		return post, nil
 	}
 
-	if err.Error() == databaseerror.NOT_FOUND {
+	if databaseerror.IsNotFound(err) {
 		return nil, internalerrors.NotFound("Post")
 	}
 

@@ -1,11 +1,11 @@
 package post_test
 
 import (
+	"database/sql"
 	"errors"
 	"testing"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
-	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database-error"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/databasetypes"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
@@ -159,7 +159,7 @@ func Test_GetPost_ShouldNotFind(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetPost", mock.Anything).Return(nil, errors.New(databaseerror.NOT_FOUND))
+	repository.On("GetPost", mock.Anything).Return(nil, sql.ErrNoRows)
 	service.Repository = repository
 
 	currPost, err := service.GetPost("xid-not-valid")
