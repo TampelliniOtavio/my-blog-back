@@ -1,4 +1,4 @@
-package databasetypes
+package types
 
 import (
 	"database/sql"

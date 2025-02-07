@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
-	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/databasetypes"
+	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/database/types"
 	"github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/formatter"
 	internalerrors "github.com/TampelliniOtavio/my-blog-back/internal/internal-errors"
 	postmock "github.com/TampelliniOtavio/my-blog-back/internal/test/internalmock/post"
@@ -32,7 +32,7 @@ var (
 		LikeCount: 0,
 		CreatedAt: formatter.CurrentTimestamp(),
 		UpdatedAt: formatter.CurrentTimestamp(),
-		DeletedAt: databasetypes.NewNullString(formatter.CurrentTimestamp()),
+		DeletedAt: types.NewNullString(formatter.CurrentTimestamp()),
 	}
 	addPostBody = post.AddPostBody{
 		Post: newPost.Post,
