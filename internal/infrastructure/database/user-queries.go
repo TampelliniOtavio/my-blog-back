@@ -3,6 +3,7 @@ package database
 import (
 	"strings"
 
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/user"
 	databaseerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/database-error"
 	internalerror "github.com/TampelliniOtavio/my-blog-back/internal/infrastructure/error/internal-error"
@@ -38,6 +39,60 @@ func (r *UserRepository) CreateUser(createUser *user.User) (*user.User, error) {
 	}
 
 	return &newUser, nil
+}
+
+func (r *UserRepository) GetPostsByUsername(params *user.GetPostsByUsernameParams) (*[]post.Post, error) {
+	var posts []post.Post
+
+	err := r.db.Select(
+		&posts,
+		`SELECT
+			posts.xid,
+			posts.post,
+			posts.created_at,
+			posts.updated_at,
+			posts.like_count,
+			posts.deleted_at,
+			users.id as created_by,
+			CASE
+				WHEN
+					COALESCE(
+						(SELECT
+							COUNT(*)
+						FROM
+							my_blog.likes_post AS likes
+						WHERE
+							likes.post_xid = posts.xid
+							AND likes.user_id = $4
+						)
+						, 0
+					) > 0
+				THEN true
+			ELSE
+				false
+			END AS is_liked_by_user,
+			users.username
+		FROM my_blog.posts AS posts
+		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
+		WHERE
+			posts.deleted_at IS NULL
+			AND users.username = $1
+		LIMIT $2 OFFSET $3`,
+		params.Username,
+		params.Limit,
+		params.Offset,
+		params.UserId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if posts == nil {
+		return &[]post.Post{}, nil
+	}
+
+	return &posts, nil
 }
 
 func (r *UserRepository) handleError(err error) error {
