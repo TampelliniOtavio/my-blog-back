@@ -8,10 +8,10 @@ import (
 
 type User struct {
 	Id       int64  `validate:"required" json:"-"`
-	Xid      string `validate:"required"`
-	Username string `validate:"required"`
+	Xid      string `validate:"required" json:"xid"`
+	Username string `validate:"required" json:"username"`
 	Password string `validate:"required" json:"-"`
-	Email    string `validate:"required,email"`
+	Email    string `validate:"required,email" json:"email"`
 }
 
 func NewUser(username string, email string, password string) (*User, error) {
