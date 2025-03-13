@@ -1,7 +1,5 @@
 package user
 
-import "github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
-
 type GetPostsByUsernameParams struct {
 	UserId   int64
 	Username string
@@ -11,6 +9,5 @@ type GetPostsByUsernameParams struct {
 
 type Repository interface {
 	GetByUsername(username string) (*User, error)
-	GetPostsByUsername(params *GetPostsByUsernameParams) (*[]post.Post, error)
 	CreateUser(user *User) (*User, error)
 }

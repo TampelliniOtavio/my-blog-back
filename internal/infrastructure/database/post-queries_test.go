@@ -67,12 +67,58 @@ func Test_GetAllPosts_List(t *testing.T) {
 		assert.Nil(err)
 	}
 
-	users, err := repo.Post.GetAllPosts(quantity/2, quantity/2, 0)
+	params := &post.ListAllPostsParams{
+		AuthUserId: 0,
+		Queries: &post.GetAllPostsQueries{
+			Username: "",
+			Limit: quantity/2,
+			Offset: quantity/2,
+		},
+	}
+
+	users, err := repo.Post.GetAllPosts(params)
 
 	assert.NotNil(users)
 	assert.Nil(err)
 
 	assert.Equal(quantity/2, len(*users))
+}
+
+func Test_GetAllPosts_FilterUsername(t *testing.T) {
+	assert := assert.New(t)
+	quantity := 10
+
+	user, _ := createUser(generateRandomUser())
+
+	for range(quantity) {
+		post, err := createPost(generateRandomPost(1, user))
+		assert.NotNil(post)
+		assert.Nil(err)
+	}
+
+	randomUser, _ := createUser(generateRandomUser())
+
+	for range(quantity) {
+		post, err := createPost(generateRandomPost(1, randomUser))
+		assert.NotNil(post)
+		assert.Nil(err)
+	}
+
+	params := &post.ListAllPostsParams{
+		AuthUserId: 0,
+		Queries: &post.GetAllPostsQueries{
+			Username: user.Username,
+			Limit: quantity * 2,
+			Offset: 0,
+		},
+	}
+
+	posts, err := repo.Post.GetAllPosts(params)
+
+	assert.NotNil(posts)
+	assert.Nil(err)
+
+	assert.Equal(quantity, len(*posts))
 }
 
 func Test_AddLikeToPost_AddLike(t *testing.T) {

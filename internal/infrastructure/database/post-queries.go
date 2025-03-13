@@ -1,6 +1,7 @@
 package database
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
@@ -17,8 +18,24 @@ func NewPostRepository(db *sqlx.DB) *PostRepository {
 	return &PostRepository{db}
 }
 
-func (r *PostRepository) GetAllPosts(limit int, offset int, authUserId int64) (*[]post.Post, error) {
+func (r *PostRepository) GetAllPosts(params *post.ListAllPostsParams) (*[]post.Post, error) {
 	var posts []post.Post
+
+	sb := strings.Builder{}
+
+	selectParams := []any{
+		params.Queries.Limit,
+		params.Queries.Offset,
+		params.AuthUserId,
+	}
+
+	if params.Queries.Username != "" {
+		selectParams = append(selectParams, params.Queries.Username)
+		if _, err := sb.WriteString(" AND users.username = $" + strconv.Itoa(len(selectParams)) + "\n"); err != nil {
+			return nil, err
+		}
+	}
+
 	err := r.db.Select(
 		&posts,
 		`SELECT
@@ -50,10 +67,9 @@ func (r *PostRepository) GetAllPosts(limit int, offset int, authUserId int64) (*
 		FROM my_blog.posts AS posts
 		INNER JOIN my_blog.users AS users ON users.id = posts.created_by
 		WHERE posts.deleted_at IS NULL
+		` + sb.String() + `
 		LIMIT $1 OFFSET $2`,
-		limit,
-		offset,
-		authUserId,
+		selectParams...
 	)
 
 	if err != nil {

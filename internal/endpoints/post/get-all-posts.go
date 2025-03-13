@@ -1,6 +1,7 @@
 package post
 
 import (
+	"github.com/TampelliniOtavio/my-blog-back/internal/domain/post"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,7 +12,7 @@ func (h *Handler) getAllPosts(ctx *fiber.Ctx) error {
 		userId = user.Id
 	}
 
-	posts, err := h.Service.ListAllPosts(ctx.QueryInt("limit", 100), ctx.QueryInt("offset", 0), userId)
+	posts, err := h.Service.ListAllPosts(post.NewGetAllPostsParams(userId, ctx))
 
 	if err != nil {
 		return err

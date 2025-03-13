@@ -54,16 +54,27 @@ func setup() {
 	}
 }
 
+func newListPostsParams(limit int, offset int, userId int64) *post.ListAllPostsParams {
+	return &post.ListAllPostsParams{
+		AuthUserId: userId,
+		Queries: &post.GetAllPostsQueries{
+			Username: "",
+			Limit: limit,
+			Offset: offset,
+		},
+	}
+}
+
 func Test_GetAllPosts_should_return(t *testing.T) {
 	setup()
 	assert := assert.New(t)
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetAllPosts", mock.Anything, mock.Anything, mock.Anything).Return(&posts, nil)
+	repository.On("GetAllPosts", mock.Anything).Return(&posts, nil)
 	service.Repository = repository
 
-	post, err := service.ListAllPosts(0, 1, 0)
+	post, err := service.ListAllPosts(newListPostsParams(10, 0, 0))
 
 	assert.Nil(err)
 	assert.NotNil(post)
@@ -75,10 +86,10 @@ func Test_GetAllPosts_should_validate_limit(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetAllPosts", mock.Anything, mock.Anything, mock.Anything).Return(&posts, nil)
+	repository.On("GetAllPosts", mock.Anything).Return(&posts, nil)
 	service.Repository = repository
 
-	_, err := service.ListAllPosts(-1, 1, 0)
+	_, err := service.ListAllPosts(newListPostsParams(-1, 1, 0))
 
 	assert.NotNil(err)
 	assert.Equal(err.Error(), "Limit is not valid")
@@ -90,10 +101,10 @@ func Test_GetAllPosts_should_validate_offset(t *testing.T) {
 
 	repository := new(postmock.RepositoryMock)
 
-	repository.On("GetAllPosts", mock.Anything, mock.Anything, mock.Anything).Return(&posts, nil)
+	repository.On("GetAllPosts", mock.Anything).Return(&posts, nil)
 	service.Repository = repository
 
-	_, err := service.ListAllPosts(1, -1, 0)
+	_, err := service.ListAllPosts(newListPostsParams(1, -1, 0))
 
 	assert.NotNil(err)
 	assert.Equal(err.Error(), "Offset is not valid")

@@ -9,8 +9,8 @@ type RepositoryMock struct {
 	mock.Mock
 }
 
-func (c *RepositoryMock) GetAllPosts(limit int, offset int, authUserId int64) (*[]post.Post, error) {
-	args := c.Called(limit, offset, authUserId)
+func (c *RepositoryMock) GetAllPosts(params *post.ListAllPostsParams) (*[]post.Post, error) {
+	args := c.Called(params)
 
 	first := args.Get(0)
 	err := args.Error(1)

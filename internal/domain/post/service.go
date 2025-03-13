@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	ListAllPosts(limit int, offset int, authUserId int64) (*[]Post, error)
+	ListAllPosts(params *ListAllPostsParams) (*[]Post, error)
 	GetPost(xid string, authUserId int64) (*Post, error)
 	AddPost(body *AddPostBody, createdBy int64) (*Post, error)
 	AddLikeToPost(postXid string, userId int64) (*Post, error)
@@ -19,16 +19,16 @@ type ServiceImp struct {
 	Repository Repository
 }
 
-func (s *ServiceImp) ListAllPosts(limit int, offset int, authUserId int64) (*[]Post, error) {
-	if limit < 0 {
+func (s *ServiceImp) ListAllPosts(params *ListAllPostsParams) (*[]Post, error) {
+	if params.Queries.Limit < 0 {
 		return nil, fiber.NewError(400, "Limit is not valid")
 	}
 
-	if offset < 0 {
+	if params.Queries.Offset < 0 {
 		return nil, fiber.NewError(400, "Offset is not valid")
 	}
 
-	return s.Repository.GetAllPosts(limit, offset, authUserId)
+	return s.Repository.GetAllPosts(params)
 }
 
 func (s *ServiceImp) AddPost(body *AddPostBody, createdBy int64) (*Post, error) {
