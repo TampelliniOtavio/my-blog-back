@@ -26,7 +26,7 @@ func (s *ServiceImp) LoginUser(body *PostLoginBody) (string, error) {
 		return "", fiber.NewError(400, "Incorrect Username or Password")
 	}
 
-	if !encrypt.VerifyPassword(user.Password, body.Password) {
+	if !encrypt.VerifyPassword(body.Password, user.Password) {
 		return "", fiber.NewError(400, "Incorrect Username or Password")
 	}
 
