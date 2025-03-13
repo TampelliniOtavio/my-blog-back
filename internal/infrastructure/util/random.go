@@ -19,7 +19,7 @@ func RandomString(n int) string {
 
 	k := len(alphabet)
 
-	for i := 0; i < n; i++ {
+	for range(n) {
 		c := alphabet[currRand.Intn(k)]
 		sb.WriteByte(c)
 	}

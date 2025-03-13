@@ -61,7 +61,7 @@ func Test_GetAllPosts_List(t *testing.T) {
 
 	user, _ := createUser(generateRandomUser())
 
-	for i := 0; i < quantity; i++ {
+	for range(quantity) {
 		post, err := createPost(generateRandomPost(1, user))
 		assert.NotNil(post)
 		assert.Nil(err)
